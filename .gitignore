@@ -1,0 +1,51 @@
+# Android build output
+build/
+app/build/
+
+# Gradle files
+.gradle/
+*.iml
+/local.properties
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Native libraries
+libs/**/armeabi/
+libs/**/armeabi-v7a/
+libs/**/arm64-v8a/
+libs/**/x86/
+libs/**/x86_64/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (e.g. Firebase) JSON file
+google-services.json
+
+# Crashlytics config file (if using Crashlytics)
+fabric.properties
+
+# Local configuration file (e.g. API keys)
+app/local.properties
+
+# Generated files
+app/generated/
+.idea/
+*.log
+*.pot
+*.po
+*.mo
+
+# Kotlin-specific
+.gradle/
+.idea/
+build/
+*.kotlin_module
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+
+# Android Studio Navigation editor temp files
+.navigation/
