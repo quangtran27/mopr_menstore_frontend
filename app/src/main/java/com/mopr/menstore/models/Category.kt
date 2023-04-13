@@ -1,8 +1,8 @@
 package com.mopr.menstore.models
 
-data class Category(
+data class Category (
 	val id: Int,
 	val name: String,
 	val desc: String,
-	val image: String,
+	val image: String?, // Constants.BASE_URL + <object>.image
 )
