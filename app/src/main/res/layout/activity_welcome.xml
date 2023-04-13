@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:gravity="center">
-
-    <Button
-        android:id="@+id/id"
-        android:layout_width="wrap_content"
+    tools:context=".activities.WelcomeActivity"
+    android:gravity="center"
+    android:background="@color/primary">
+    <ImageView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Call API" />
+        android:src="@drawable/logo"
+        android:layout_marginBottom="24dp"
+        tools:ignore="ContentDescription" />
 </LinearLayout>
