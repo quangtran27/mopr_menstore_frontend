@@ -64,58 +64,143 @@ class AuthenticationActivity : AppCompatActivity() {
         val password = binding.password.text.toString()
 
         // Validate inputs
-        if (TextUtils.isEmpty(phone)) {
-            binding.username.error = "Vui lòng nhập thông tin!"
-            binding.username.requestFocus()
-        }
         if (TextUtils.isEmpty(password)) {
             binding.password.error = "Vui lòng nhập thông tin!"
             binding.password.requestFocus()
         }
+        if (TextUtils.isEmpty(phone)) {
+            binding.username.error = "Vui lòng nhập thông tin!"
+            binding.username.requestFocus()
+        }
+        else if(!isPhoneNumberValid(phone)){
+            binding.username.error = "Số điện thoại không hợp lệ!"
+            binding.username.requestFocus()
+        }
+        else{
+            //Initialize a UserApiService object from the Retrofit object
+            val userLoginApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
 
-        //Initialize a UserApiService object from the Retrofit object
-        val userLoginApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
+            userLoginApi.login(phone,password).enqueue(object : Callback<User>{
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // Login success, handle response data
+                        val userResp = response.body()
+                        if(userResp != null){
+                            val user: User = userResp
+                            //Save user info
+                            SharePrefManager.getInstance(applicationContext).saveUser(user)
 
-        userLoginApi.login(phone,password).enqueue(object : Callback<User>{
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    // Login success, handle response data
-                    val userResp = response.body()
-                    if(userResp != null){
-                        val user: User = userResp
-                        //Save user info
-                        SharePrefManager.getInstance(applicationContext).saveUser(user)
-
-                        //Inform success login
+                            //Inform success login
+                            Toast.makeText(
+                                applicationContext,
+                                "Đăng nhập thành công",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            user.birthday?.let { Log.d("DATE", it.toString()) }
+                        }
+                    } else {
+                        // Login failed, inform failed login
                         Toast.makeText(
                             applicationContext,
-                            "Đăng nhập thành công",
+                            "Số điện thoại hoặc mật khẩu không đúng!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        user.birthday?.let { Log.d("DATE", it.toString()) }
                     }
-                } else {
-                    // Login failed, inform failed login
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
                     Toast.makeText(
                         applicationContext,
-                        "Số điện thoại hoặc mật khẩu không đúng!",
+                        "Error in calling Api",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Toast.makeText(
-                    applicationContext,
-                    "Error in calling Api",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-        })
+            })
+        }
     }
 
     private fun signup(){
+        //Get info from UI
+        val phone = binding.phoneSignup.text.toString()
+        val name = binding.nameSignup.text.toString()
+        val password = binding.passwordSignup.text.toString()
+        val email = binding.emailSignup.text.toString()
 
+        // Validate inputs
+        if (TextUtils.isEmpty(name)) {
+            binding.nameSignup.error = "Vui lòng nhập thông tin!"
+            binding.nameSignup.requestFocus()
+        }
+        if (TextUtils.isEmpty(email)) {
+            binding.emailSignup.error = "Vui lòng nhập thông tin!"
+            binding.emailSignup.requestFocus()
+        }
+        else if(isGmailValid(email)){
+            binding.emailSignup.error = "Email không đúng!"
+            binding.emailSignup.requestFocus()
+        }
+        else if (TextUtils.isEmpty(phone)) {
+            binding.phoneSignup.error = "Vui lòng nhập thông tin!"
+            binding.phoneSignup.requestFocus()
+        }
+        else if(!isPhoneNumberValid(phone)){
+            binding.phoneSignup.error = "Số điện thoại không hợp lệ!"
+            binding.phoneSignup.requestFocus()
+        }
+       else if(TextUtils.isEmpty(password)){
+           binding.passwordSignup.error = "Vui lòng nhập thông tin!"
+           binding.passwordSignup.requestFocus()
+       }
+       else if(!isPasswordValid(password)){
+            binding.passwordSignup.error = "Mật khẩu không đúng định dạng!"
+            binding.passwordSignup.requestFocus()
+        }
+        else{
+            //Initialize a UserApiService object from the Retrofit object
+            val userSignupApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
+            userSignupApi.sigup(phone,name,password,email).enqueue(object : Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // Đăng ký thành công
+                        if(response.code()==201){
+                            Toast.makeText(
+                                applicationContext,
+                                "Đăng ký thành công!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        // Lỗi dữ liệu đầu vào
+                        Toast.makeText(
+                            applicationContext,
+                            "Số điện thoại/email đã được sử dụng!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Error in calling API",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        }
+
+    }
+    private fun isPhoneNumberValid(phoneNumber: String): Boolean {
+        val regex = Regex("^(\\+84|0)\\d{9,10}$")
+        return regex.matches(phoneNumber)
+    }
+    private fun isPasswordValid(password: String):Boolean {
+        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&_+=\\-])[^\\s]{8,}\$"
+        return password.matches(passwordPattern.toRegex())
+    }
+    private fun isGmailValid(email: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9._%+-]+@gmail\\.com$")
+        return pattern.matches(email)
     }
 }
