@@ -31,5 +31,7 @@
         android:textAlignment="center"
         android:textColor="@color/primary"
         android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         tools:ignore="HardcodedText" />
 </LinearLayout>

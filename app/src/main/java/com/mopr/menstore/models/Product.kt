@@ -1,11 +1,13 @@
 package com.mopr.menstore.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Product(
 	val id: Int,
+	val categoryId: Int,
 	val name: String,
-	val category: Int,
 	val desc: String,
 	val status: Boolean,
-	val details: List<ProductDetail>,
-	val images: List<ProductImage>, // Constants.BASE_URL + <object>.image
-)
+) : Parcelable

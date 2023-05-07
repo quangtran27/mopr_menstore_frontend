@@ -1,31 +1,64 @@
 package com.mopr.menstore.api
 
-import com.mopr.menstore.api.response.AllCategoriesResponse
-import com.mopr.menstore.api.response.AllProductsResponse
+import com.mopr.menstore.models.Product
+import com.mopr.menstore.models.ProductDetail
+import com.mopr.menstore.models.ProductImage
+import com.mopr.menstore.models.Review
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ProductApiService {
-	@GET("category/get-all/")
-	fun getAllCategories(): Call<AllCategoriesResponse>
+	@GET("products/")
+	fun getAllProducts(
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "",
+		@Query("order") order: String = "asc",
+	): Call<List<Product>>
 
-	@GET("product/get-top-sales")
-	fun getTopSaleProduct(): Call<AllProductsResponse>
+	@GET("products/{productId}")
+	fun getProduct(@Path(value = "productId", encoded = true) productId: Int): Call<Product>
 
-	@GET("product/get-latest")
-	fun getLatestProducts(): Call<AllProductsResponse>
+	@GET("products/{productId}/details")
+	fun getProductDetails(
+		@Path(
+			value = "productId",
+			encoded = true
+		) productId: Int
+	): Call<List<ProductDetail>>
 
-	@GET("product/search")
-	fun search(
+	@GET("products/{productId}/images")
+	fun getProductImages(
+		@Path(
+			value = "productId",
+			encoded = true
+		) productId: Int
+	): Call<List<ProductImage>>
+
+	@GET("products/{productId}/reviews")
+	fun getProductReviews(
+		@Path(
+			value = "productId",
+			encoded = true
+		) productId: Int
+	): Call<List<Review>>
+
+	@GET("products/top-sales")
+	fun getTopSaleProduct(): Call<List<Product>>
+
+	@GET("products/latest")
+	fun getLatestProducts(): Call<List<Product>>
+
+	@GET("products/search")
+	fun searchProducts(
 		@Query("keyword") keyword: String = "",
-		@Query("sort_by") sortBy: String = "price",
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "",
 		@Query("order") order: String = "asc",
 		@Query("category_id") categoryId: Int = 0,
 		@Query("min_price") minPrice: Int = 0,
 		@Query("max_price") maxPrice: Int = 99999999,
 		@Query("review") review: Int = 0,
-	): Call<AllProductsResponse>
+	): Call<List<Product>>
 }

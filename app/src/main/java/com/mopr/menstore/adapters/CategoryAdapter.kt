@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mopr.menstore.R
-import com.mopr.menstore.databinding.CategoryItemBinding
+import com.mopr.menstore.databinding.ItemCategoryBinding
 import com.mopr.menstore.models.Category
 import com.mopr.menstore.utils.Constants
 
@@ -17,7 +17,7 @@ class CategoryAdapter(
 	private val categories: List<Category>
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 
-	inner class CategoryViewHolder(private val binding: CategoryItemBinding) :
+	inner class CategoryViewHolder(private val binding: ItemCategoryBinding) :
 		RecyclerView.ViewHolder(binding.root) {
 
 		@SuppressLint("ResourceAsColor")
@@ -42,7 +42,7 @@ class CategoryAdapter(
 	override fun getItemCount(): Int = categories.size
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-		val binding = CategoryItemBinding.inflate(
+		val binding = ItemCategoryBinding.inflate(
 			LayoutInflater.from(parent.context),
 			parent,
 			false

@@ -36,7 +36,9 @@
         android:textSize="14sp"
         android:textAlignment="center"
         android:textColor="@color/primary"
-        android:text="Product Name"
+        android:text="Product Name Product Name Product Name"
+        android:maxLines="1"
+        android:ellipsize="end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvProductPrice" />
