@@ -10,7 +10,7 @@ class Formatter {
 			val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
 			symbols.groupingSeparator = '.'
 			symbols.decimalSeparator = ','
-			val decimalFormat = DecimalFormat("#,### đ", symbols)
+			val decimalFormat = DecimalFormat("#,###đ", symbols)
 			return decimalFormat.format(amount)
 		}
 	}

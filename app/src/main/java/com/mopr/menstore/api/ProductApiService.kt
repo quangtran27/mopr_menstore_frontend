@@ -1,5 +1,6 @@
 package com.mopr.menstore.api
 
+import com.mopr.menstore.models.ListResponse
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
@@ -7,21 +8,19 @@ import com.mopr.menstore.models.Review
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface ProductApiService {
 	@GET("products/")
-	fun getAllProducts(
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "",
-		@Query("order") order: String = "asc",
-	): Call<List<Product>>
+	fun getAll(
+		@QueryMap options: Map<String, String>
+	): Call<ListResponse<Product>>
 
 	@GET("products/{productId}")
-	fun getProduct(@Path(value = "productId", encoded = true) productId: Int): Call<Product>
+	fun get(@Path(value = "productId", encoded = true) productId: Int): Call<Product>
 
 	@GET("products/{productId}/details")
-	fun getProductDetails(
+	fun getDetails(
 		@Path(
 			value = "productId",
 			encoded = true
@@ -29,7 +28,7 @@ interface ProductApiService {
 	): Call<List<ProductDetail>>
 
 	@GET("products/{productId}/images")
-	fun getProductImages(
+	fun getImages(
 		@Path(
 			value = "productId",
 			encoded = true
@@ -37,7 +36,7 @@ interface ProductApiService {
 	): Call<List<ProductImage>>
 
 	@GET("products/{productId}/reviews")
-	fun getProductReviews(
+	fun getReviews(
 		@Path(
 			value = "productId",
 			encoded = true
@@ -45,20 +44,8 @@ interface ProductApiService {
 	): Call<List<Review>>
 
 	@GET("products/top-sales")
-	fun getTopSaleProduct(): Call<List<Product>>
+	fun getTopSale(): Call<List<Product>>
 
 	@GET("products/latest")
-	fun getLatestProducts(): Call<List<Product>>
-
-	@GET("products/search")
-	fun searchProducts(
-		@Query("keyword") keyword: String = "",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "",
-		@Query("order") order: String = "asc",
-		@Query("category_id") categoryId: Int = 0,
-		@Query("min_price") minPrice: Int = 0,
-		@Query("max_price") maxPrice: Int = 99999999,
-		@Query("review") review: Int = 0,
-	): Call<List<Product>>
+	fun getLatest(): Call<List<Product>>
 }

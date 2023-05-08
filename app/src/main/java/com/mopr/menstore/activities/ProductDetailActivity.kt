@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewTreeObserver
@@ -16,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.gson.Gson
 import com.mopr.menstore.R
@@ -41,7 +39,6 @@ import com.mopr.menstore.utils.ProductApiUtil
 import com.mopr.menstore.utils.ReviewApiUtil
 import com.mopr.menstore.utils.UserApiUtil
 import kotlinx.coroutines.launch
-import retrofit2.create
 
 
 class ProductDetailActivity : AppCompatActivity() {
@@ -143,7 +140,7 @@ class ProductDetailActivity : AppCompatActivity() {
 			reviewApiUtil = ReviewApiUtil(RetrofitClient.getRetrofit().create(ReviewApiService::class.java))
 
 			if (product != null) {
-				reviews = productApiUtil.getProductReviews(product!!.id)
+				reviews = productApiUtil.getReviews(product!!.id)
 				binding.tvReviewsCountTop.text = "${reviews.size} đánh giá"
 				binding.tvReviewsCountBot.text = "${reviews.size} đánh giá"
 				var averageRate = reviews.map { it.star.toFloat() }.average()

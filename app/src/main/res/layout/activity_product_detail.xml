@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/header"
-        layout="@layout/common_header_with_back_search" />
+        layout="@layout/common_header_with_back_search_cart" />
 
     <ScrollView
         android:layout_width="match_parent"

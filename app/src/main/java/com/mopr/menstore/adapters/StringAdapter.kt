@@ -14,8 +14,7 @@ class StringAdapter(
 	private val items: List<String>,
 	private val availableItems: List<String>,
 	private val activeItem: String
-) :
-	RecyclerView.Adapter<StringAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<StringAdapter.ViewHolder>() {
 	private var listener: OnItemClickListener? = null
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 		val binding = ItemStringBinding.inflate(

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,7 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="44dp"
         android:layout_weight="1"
-        android:background="@drawable/background_search_primary_border_left"
+        android:background="@drawable/background_search_primary_border"
         android:drawablePadding="12dp"
         android:hint="Nhập tên sản phẩm"
         android:importantForAutofill="no"
@@ -32,14 +34,20 @@
         android:paddingHorizontal="16dp"
         android:textColorHint="#959595"
         android:textSize="16sp"
+        android:layout_marginEnd="8dp"
         tools:ignore="HardcodedText" />
 
-    <ImageButton
-        android:id="@+id/ibSearch"
-        android:layout_width="44dp"
+    <Button
+        android:id="@+id/btnFilter"
+        android:layout_width="70dp"
         android:layout_height="44dp"
-        android:background="@drawable/background_primary_right_radius"
-        android:src="@drawable/ic_search_white"
+        android:background="#00ffffff"
+        app:icon="@drawable/ic_filter"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="Lọc"
+        android:textColor="@color/text_primary"
+        android:paddingHorizontal="6dp"
+        android:textAllCaps="false"
         tools:ignore="ContentDescription" />
 
 </LinearLayout>

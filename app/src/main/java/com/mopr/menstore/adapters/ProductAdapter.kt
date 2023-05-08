@@ -3,6 +3,7 @@ package com.mopr.menstore.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,25 @@ class ProductAdapter (
 	private val productDetailsList: List<List<ProductDetail>>,
 	private val productImagesList: List<List<ProductImage?>>
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+
+	override fun getItemCount(): Int = products.size
+
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+		Log.d(TAG, "onCreateViewHolder: $products")
+		val binding = ItemProductBinding.inflate(
+			LayoutInflater.from(parent.context),
+			parent,
+			false
+		)
+		return ProductViewHolder(binding)
+	}
+
+	override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+		if (products.isNotEmpty()) {
+			holder.bind(products[position], productDetailsList[position], productImagesList[position])
+		}
+	}
+
 	inner class ProductViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
 		@SuppressLint("SetTextI18n")
 		fun bind(product: Product, productDetails: List<ProductDetail>, productImages: List<ProductImage?>) {
@@ -39,8 +59,8 @@ class ProductAdapter (
 			}
 
 			binding.tvProductName.text = product.name
-			binding.tvProductSold.text = "Đã bán ${Formatter.formatVNDAmount(sold.toLong())}"
-			binding.tvProductPrice.text = minPrice.toString()
+			binding.tvProductSold.text = "Đã bán $sold"
+			binding.tvProductPrice.text = Formatter.formatVNDAmount(minPrice.toLong())
 			if (productImages.isNotEmpty()) {
 				if (productImages[0] != null) {
 					Glide.with(context).load(Constants.BASE_URL + productImages[0]!!.image).into(binding.ivProductImage)
@@ -58,18 +78,7 @@ class ProductAdapter (
 		}
 	}
 
-	override fun getItemCount(): Int = products.size
-
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-		val binding = ItemProductBinding.inflate(
-			LayoutInflater.from(parent.context),
-			parent,
-			false
-		)
-		return ProductViewHolder(binding)
-	}
-
-	override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-		holder.bind(products[position], productDetailsList[position], productImagesList[position])
+	companion object {
+		private const val TAG = "ProductAdapter"
 	}
 }

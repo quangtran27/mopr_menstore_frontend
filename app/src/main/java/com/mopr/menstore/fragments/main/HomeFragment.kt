@@ -1,22 +1,17 @@
 package com.mopr.menstore.fragments.main
 
 import android.annotation.SuppressLint
-import android.graphics.Rect
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
-import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.mopr.menstore.R
+import com.mopr.menstore.activities.SearchActivity
 import com.mopr.menstore.adapters.CategoryAdapter
 import com.mopr.menstore.adapters.CompactProductAdapter
 import com.mopr.menstore.api.ApiException
@@ -34,71 +29,64 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 	private lateinit var binding: FragmentHomeBinding
+	private var categories: List<Category> = emptyList()
+	private var topSaleProducts: List<Product> = emptyList()
+	private var latestProducts: List<Product> = emptyList()
+	private var topSaleProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
+	private var topSaleProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
+	private var latestProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
+	private var latestProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = FragmentHomeBinding.inflate(layoutInflater)
+
+		binding.header.etSearch.isFocusable = false
+		binding.header.etSearch.setOnClickListener {
+			startActivity(Intent(requireContext(), SearchActivity::class.java))
+		}
 
 		binding.header.ibCart.setOnClickListener {
 //			startActivity(Intent(requireContext(), CartActivity))
 		}
 
-		fetchData()
+		lifecycleScope.launch {
+			fetchData()
+			bindData()
+		}
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 		return binding.root
 	}
 
-	companion object {
-		/**
-		 * @return A new instance of fragment HomeFragment.
-		 */
-		// TODO: Rename and change types and number of parameters
-		@JvmStatic
-		fun newInstance() =
-			HomeFragment().apply {
-				arguments = Bundle().apply {
-				}
-			}
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	private fun fetchData() {
+	private suspend fun fetchData() {
 		val productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
 		val categoryApiUtil = CategoryApiUtil(RetrofitClient.getRetrofit().create(CategoryApiService::class.java))
 
-		lifecycleScope.launch {
-			try {
-				val categories = categoryApiUtil.getAllCategories()
-				bindCategories(categories)
-
-				val topSaleProducts = productApiUtil.getTopSaleProducts()
-				val topSaleProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
-				val topSaleProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
-
-				for (product in topSaleProducts) {
-					topSaleProductDetailsList.add(productApiUtil.getProductDetails(product.id))
-					topSaleProductImagesList.add(productApiUtil.getProductImages(product.id))
-				}
-				bindTopSaleProducts(topSaleProducts, topSaleProductDetailsList, topSaleProductImagesList)
-
-				val latestProducts = productApiUtil.getLatestProducts()
-				val latestProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
-				val latestProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
-
-				for (product in latestProducts) {
-					latestProductDetailsList.add(productApiUtil.getProductDetails(product.id))
-					latestProductImagesList.add(productApiUtil.getProductImages(product.id))
-				}
-
-				bindLatestProducts(latestProducts, latestProductDetailsList, latestProductImagesList)
-			} catch (e: ApiException) {
-				Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+		try {
+			categories = categoryApiUtil.getAllCategories()
+			topSaleProducts = productApiUtil.getTopSale()
+			for (product in topSaleProducts) {
+				topSaleProductDetailsList.add(productApiUtil.getDetails(product.id))
+				topSaleProductImagesList.add(productApiUtil.getImages(product.id))
 			}
+			latestProducts = productApiUtil.getLatest()
+			for (product in latestProducts) {
+				latestProductDetailsList.add(productApiUtil.getDetails(product.id))
+				latestProductImagesList.add(productApiUtil.getImages(product.id))
+			}
+		} catch (e: ApiException) {
+			Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+	private fun bindData() {
+		bindCategories(categories)
+		bindTopSaleProducts(topSaleProducts, topSaleProductDetailsList, topSaleProductImagesList)
+		bindLatestProducts(latestProducts, latestProductDetailsList, latestProductImagesList)
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
 	private fun bindTopSaleProducts(products: List<Product>, topSaleProductDetailsList: List<List<ProductDetail>>, topSaleProductImagesList: List<List<ProductImage?>>) {
 		if (products.isNotEmpty()) {
 			val compactProductAdapter = CompactProductAdapter(requireContext(), products, topSaleProductDetailsList, topSaleProductImagesList)
@@ -112,7 +100,7 @@ class HomeFragment : Fragment() {
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+	@SuppressLint("NotifyDataSetChanged")
 	private fun bindLatestProducts(products: List<Product>, latestProductDetailsList: List<List<ProductDetail>>, latestProductImagesList: List<List<ProductImage?>>) {
 		if (products.isNotEmpty()) {
 			val compactProductAdapter = CompactProductAdapter(requireContext(), products, latestProductDetailsList, latestProductImagesList)
@@ -126,7 +114,7 @@ class HomeFragment : Fragment() {
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+	@SuppressLint("NotifyDataSetChanged")
 	private fun bindCategories(categories: List<Category>) {
 		if (categories.isNotEmpty()) {
 			val categoryAdapter = CategoryAdapter(requireContext(), categories)
@@ -140,4 +128,18 @@ class HomeFragment : Fragment() {
 		}
 	}
 
+	companion object {
+		/**
+		 * @return A new instance of fragment HomeFragment.
+		 */
+		// TODO: Rename and change types and number of parameters
+		@JvmStatic
+		fun newInstance() =
+			HomeFragment().apply {
+				arguments = Bundle().apply {
+				}
+			}
+
+		const val TAG = "HomeFragment"
+	}
 }

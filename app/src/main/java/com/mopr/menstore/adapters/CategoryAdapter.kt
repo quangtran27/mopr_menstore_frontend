@@ -2,9 +2,13 @@ package com.mopr.menstore.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mopr.menstore.R
@@ -14,10 +18,11 @@ import com.mopr.menstore.utils.Constants
 
 class CategoryAdapter(
 	private val context: Context,
-	private val categories: List<Category>
+	private val categories: List<Category>,
+	private val activeId: Int = 0
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
-
-	inner class CategoryViewHolder(private val binding: ItemCategoryBinding) :
+	private var listener: OnItemClickListener? = null
+	inner class CategoryViewHolder(val binding: ItemCategoryBinding) :
 		RecyclerView.ViewHolder(binding.root) {
 
 		@SuppressLint("ResourceAsColor")
@@ -30,11 +35,11 @@ class CategoryAdapter(
 				binding.ivCategoryImage.setBackgroundColor(R.color.primary)
 				binding.ivCategoryImage.scaleType = ImageView.ScaleType.FIT_CENTER
 			}
-			binding.root.setOnClickListener {
-//				val intent = Intent(itemView.context, SearchActivity::class.java)
-//				intent.putExtra("categoryId", category.id.toString())
-//				intent.putExtra("categoryName", category.name)
-//				itemView.context.startActivity(intent)
+
+			if (category.id == activeId) {
+				binding.main.setBackgroundColor(ContextCompat.getColor(context, R.color.background_gray))
+				binding.root.setOnClickListener(null)
+				binding.root.scrollTo(adapterPosition, 0)
 			}
 		}
 	}
@@ -53,5 +58,20 @@ class CategoryAdapter(
 	override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
 		val category = categories[position]
 		holder.bind(category)
+		holder.binding.root.setOnClickListener {
+			listener?.onItemClick(category.id)
+		}
+	}
+
+	companion object {
+		const val TAG = "CategoryAdapter"
+	}
+
+	interface OnItemClickListener {
+		fun onItemClick(categoryId: Int)
+	}
+
+	fun setOnItemClickListener(listener: OnItemClickListener) {
+		this.listener = listener
 	}
 }
