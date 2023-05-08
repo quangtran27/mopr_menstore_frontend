@@ -49,3 +49,6 @@ build/
 
 # Android Studio Navigation editor temp files
 .navigation/
+
+# Constants
+app\src\main\java\com\mopr\menstore\utils\Constants.kt

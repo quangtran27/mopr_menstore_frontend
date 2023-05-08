@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <ImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        android:background="#00ffffff"
+        android:importantForAccessibility="no"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pic_arrow_back" />
+
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:background="@drawable/background_search_primary_border"
+        android:drawablePadding="12dp"
+        android:hint="Nhập tên sản phẩm"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:paddingHorizontal="16dp"
+        android:textColorHint="#959595"
+        android:textSize="16sp"
+        android:layout_marginEnd="8dp"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnFilter"
+        android:layout_width="70dp"
+        android:layout_height="44dp"
+        android:background="#00ffffff"
+        app:icon="@drawable/ic_filter"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="Lọc"
+        android:textColor="@color/text_primary"
+        android:paddingHorizontal="6dp"
+        android:textAllCaps="false"
+        tools:ignore="ContentDescription" />
+
+</LinearLayout>

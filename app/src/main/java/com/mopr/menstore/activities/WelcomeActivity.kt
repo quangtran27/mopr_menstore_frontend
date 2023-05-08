@@ -15,7 +15,7 @@ class WelcomeActivity : AppCompatActivity() {
 		setContentView(binding.root)
 
 		Handler(Looper.getMainLooper()).postDelayed({
-			startActivity(Intent(this, HomeActivity::class.java))
+			startActivity(Intent(this, MainActivity::class.java))
 			finish()
 		}, 1500)
 	}

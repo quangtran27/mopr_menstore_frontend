@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/inbox_item"
+        android:icon="@drawable/ic_category"
+        android:title="Danh mục" />
+    <item
+        android:id="@+id/outbox_item"
+        android:icon="@drawable/ic_money"
+        android:title="Khoảng giá" />
+    <item
+        android:id="@+id/favourites_item"
+        android:icon="@drawable/ic_rate"
+        android:title="Đánh giá" />
+</menu>
