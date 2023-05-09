@@ -19,6 +19,14 @@ interface ProductApiService {
 	@GET("products/{productId}")
 	fun get(@Path(value = "productId", encoded = true) productId: Int): Call<Product>
 
+	@GET("products/details/{productDetailId}")
+	fun getDetail(
+		@Path(
+			value = "productDetailId",
+			encoded = true
+		) productDetailId: Int
+	): Call<ProductDetail>
+
 	@GET("products/{productId}/details")
 	fun getDetails(
 		@Path(

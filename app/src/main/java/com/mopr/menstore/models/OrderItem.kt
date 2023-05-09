@@ -2,7 +2,8 @@ package com.mopr.menstore.models
 
 data class OrderItem(
 	val id: Int,
-	val productDetail: ProductDetail,
+	val orderId: Int,
+	val productDetailId: Int,
 	val onSale: Boolean,
 	val price: Int,
 	val salePrice: Int,

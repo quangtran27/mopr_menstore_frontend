@@ -6,10 +6,12 @@ import com.mopr.menstore.api.ReviewApiService
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.models.Review
 import com.mopr.menstore.models.ReviewImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.Dispatcher
 import java.lang.Exception
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 	suspend fun getReview(reviewId: Int): Review? {
@@ -20,10 +22,12 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 					return@withContext response.body()
 				}
 				if (!response.isSuccessful) {
-					Log.d(TAG, "Error getting all review (ID: $reviewId). Status code: ${response.code()}")
+					Log.d(
+						TAG,
+						"Error getting all review (ID: $reviewId). Status code: ${response.code()}"
+					)
 				}
-			}
-			catch (e: Exception) {
+			} catch (e: Exception) {
 				Log.d(TAG, e.message.toString())
 			}
 			return@withContext null
@@ -35,13 +39,16 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 			try {
 				val response = reviewApiService.getReviewImages(reviewId).execute()
 				if (response.code() == 200) {
-					return@withContext response.body()?.toList<ReviewImage>() ?: emptyList<ReviewImage>()
+					return@withContext response.body()?.toList<ReviewImage>()
+						?: emptyList<ReviewImage>()
 				}
 				if (!response.isSuccessful) {
-					Log.d(TAG, "Error getting review images (reviewId: $reviewId. Status code: ${response.code()}")
+					Log.d(
+						TAG,
+						"Error getting review images (reviewId: $reviewId. Status code: ${response.code()}"
+					)
 				}
-			}
-			catch (e: Exception) {
+			} catch (e: Exception) {
 				Log.d("get_product_by_id", e.message.toString())
 			}
 			return@withContext emptyList<ReviewImage>()
@@ -51,4 +58,30 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 	companion object {
 		const val TAG = "ReviewApiUtil"
 	}
+
+	suspend fun addReview(
+		userId: RequestBody,
+		productId: RequestBody,
+		star: RequestBody,
+		description: RequestBody,
+		images: List<MultipartBody.Part>
+	): Review? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response =
+					reviewApiService.addReview(userId, productId, star, description, images)
+						.execute()
+
+				if (response.isSuccessful) {
+					return@withContext response.body()!!
+				} else {
+					throw ApiException("Error adding review. Status code: ${response.code()}")
+				}
+			} catch (e: Exception) {
+				return@withContext null
+
+			}
+		}
+	}
+
 }

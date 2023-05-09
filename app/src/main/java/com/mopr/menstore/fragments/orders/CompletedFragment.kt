@@ -1,60 +1,108 @@
 package com.mopr.menstore.fragments.orders
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.mopr.menstore.R
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.mopr.menstore.adapters.OrderAdapter
+import com.mopr.menstore.api.OrderApiService
+import com.mopr.menstore.api.ProductApiService
+import com.mopr.menstore.api.RetrofitClient
+import com.mopr.menstore.databinding.FragmentCompletedBinding
+import com.mopr.menstore.models.*
+import com.mopr.menstore.utils.OrderApiUtil
+import com.mopr.menstore.utils.ProductApiUtil
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [CompletedFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class CompletedFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+private const val USER_ID = "user_id"
 
+class CompletedFragment : Fragment(), OrderAdapter.OnItemClickListener {
+    private var userId: Int = 0
+    private lateinit var binding: FragmentCompletedBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            userId = it.getInt(USER_ID)
         }
+        binding = FragmentCompletedBinding.inflate(layoutInflater)
+        fetchData(userId)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_completed, container, false)
+        return binding.root
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CompletedFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(userId: Int) =
             CompletedFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    putInt(USER_ID, userId)
                 }
             }
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    private fun fetchData(userId: Int){
+        val orderApiService = RetrofitClient.getRetrofit().create(OrderApiService::class.java)
+        val orderApiUtil = OrderApiUtil(orderApiService)
+        val productApiService = RetrofitClient.getRetrofit().create(ProductApiService::class.java)
+        val productApiUtil = ProductApiUtil(productApiService)
+        lifecycleScope.launch {
+            try {
+                val ordersByUser = orderApiUtil.getOrdersByUser(userId)
+                var sortOrderByUser = ordersByUser.reversed()
+                var ordersCompleted : MutableList<Order> = mutableListOf()
+                for (item in sortOrderByUser) {
+                    if (item.status == 4) {
+                        ordersCompleted.add(item)
+                    }
+                }
+                var firstOrderProducts : MutableList<Product> = mutableListOf()
+                var listOrderItems: MutableList<List<OrderItem>> = mutableListOf()
+                var firstOrderProductDetails: MutableList<ProductDetail> = mutableListOf()
+                var firstImageProducts: MutableList<ProductImage> = mutableListOf()
+                for (item in ordersCompleted) {
+                    val orderItems = orderApiUtil.getOrderItems(item.id)
+                    val productDetail = productApiUtil.getDetail(orderItems!![0].productDetailId)
+                    val product = productApiUtil.get(productDetail!!.productId)
+                    val image = productApiUtil.getImages(productDetail.productId)
+                    listOrderItems.add(orderItems!!)
+                    firstOrderProducts.add(product!!)
+                    firstOrderProductDetails.add(productDetail!!)
+                    firstImageProducts.add(image!![0])
+                }
+                bindOrdersCompletedByUser(ordersCompleted, listOrderItems, firstOrderProducts,firstOrderProductDetails,firstImageProducts)
+            }catch (e: Exception) {
+                Log.d("CompletedfetchDataError", e.message.toString())
+            }
+        }
+    }
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+    private fun bindOrdersCompletedByUser(orders: List<Order>, listOrderItems: List<List<OrderItem>>, firstOrderProducts: List<Product>, firstOrderProductDetails: List<ProductDetail>, firstImageProducts: List<ProductImage>){
+        if(orders.isNotEmpty() && firstOrderProducts.isNotEmpty()){
+            val orderAdapter= OrderAdapter(this@CompletedFragment, orders,listOrderItems, firstOrderProducts,firstOrderProductDetails,firstImageProducts, 4, this@CompletedFragment)
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rcOrders.setHasFixedSize(true)
+            binding.rcOrders.adapter= orderAdapter
+            binding.rcOrders.layoutManager= layoutManager
+            orderAdapter.notifyDataSetChanged()
+            binding.tvOrders.visibility = View.GONE
+        } else {
+            binding.svOrders.visibility = View.GONE
+        }
+    }
+
+    override fun onCancelClick(orderId: Int, isPaid: Boolean, isReviewed: Boolean) {
+        TODO("Not yet implemented")
     }
 }
