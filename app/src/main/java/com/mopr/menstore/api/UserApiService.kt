@@ -1,9 +1,8 @@
 package com.mopr.menstore.api
 
 import com.mopr.menstore.models.User
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.Call
+import retrofit2.http.*
 import java.util.Date
 
 interface UserApiService {
@@ -13,15 +12,24 @@ interface UserApiService {
     fun login(
         @Field("phone") phone: String,
         @Field("password") password: String
-    ):retrofit2.Call<User>
+    ):Call<User>
 
     //Signup APi
     @FormUrlEncoded
     @POST("users/register")
-    fun sigup(
+    fun signup(
         @Field("phone") phone: String,
         @Field("name") name: String,
         @Field("password") password: String,
         @Field("email") email: String,
-    ):retrofit2.Call<User>
+    ):Call<User>
+
+    //Get user's information API
+    @GET("users/{id}")
+    fun getUserInfo(@Path("id") id: String): Call<User>
+
+    //Change user's password API
+    @FormUrlEncoded
+    @POST("users/{id}/password")
+    fun changePassword(@Path("id") id: String, @Field("old_password") oldPassword: String, @Field("new_password") newPassword: String): Call<Void>
 }

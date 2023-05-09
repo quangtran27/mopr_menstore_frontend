@@ -1,60 +1,98 @@
 package com.mopr.menstore.fragments.main
 
+import SharePrefManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.mopr.menstore.R
+import com.mopr.menstore.api.RetrofitClient
+import com.mopr.menstore.api.UserApiService
+import com.mopr.menstore.databinding.FragmentChangePasswordBinding
+import com.mopr.menstore.databinding.FragmentMeDetailBinding
+import com.mopr.menstore.models.User
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ChangePasswordFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ChangePasswordFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentChangePasswordBinding
+    private lateinit var sharePrefManager: SharePrefManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        binding = FragmentChangePasswordBinding.inflate(layoutInflater)
+        sharePrefManager = SharePrefManager.getInstance(requireContext())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        val userSaved: User = sharePrefManager.getUser()
+
+        binding.sendBtn.setOnClickListener{
+            val oldPassword = binding.oldPasswordEdt.text.toString()
+            val newPassword = binding.newPasswordEdt.text.toString()
+            val confirmPassword = binding.confirmPasswordEdt.text.toString()
+
+            // Validate input
+            if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(requireContext(),"Vui lòng nhập đầy đủ thông tin",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(!isPasswordValid(newPassword)){
+                Toast.makeText(requireContext(),"Mật khẩu mới sai định dạng!",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (newPassword != confirmPassword) {
+                Toast.makeText(requireContext(),"Mật khẩu mới và xác nhận mật khẩu không khớp!",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Initialize an ApiService object from the Retrofit object
+            val api = RetrofitClient.getRetrofit().create(UserApiService::class.java)
+            api.changePassword(userSaved.id, oldPassword, newPassword).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        // Đổi thành công
+                        if (response.code() == 200) {
+                            Toast.makeText(requireContext(), "Đổi thành công!", Toast.LENGTH_SHORT).show()
+                        } else if (response.code() == 404) {
+                            Toast.makeText(requireContext(), "Tài khoản không tồn tại!", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(),"Mật khẩu cũ sai!",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Toast.makeText(requireContext(),"api failed!",Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_change_password, container, false)
+        return binding.root
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChangePasswordFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ChangePasswordFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    //Password must contain more than 7 characters and have some special characters
+    private fun isPasswordValid(password: String):Boolean {
+        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&_+=\\-])[^\\s]{8,}\$"
+        return password.matches(passwordPattern.toRegex())
     }
 }

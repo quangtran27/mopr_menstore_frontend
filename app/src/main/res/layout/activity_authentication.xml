@@ -99,9 +99,9 @@
                 android:id="@+id/loginLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:gravity="center"
-                android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp">
@@ -112,14 +112,13 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Số điện thoại di động"
-                    app:boxStrokeWidth="0.5dp"
-                    >
+                    app:boxStrokeWidth="0.5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/username"
-                        android:textSize="11dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -129,14 +128,13 @@
                     android:layout_margin="5dp"
                     android:hint="Mật khẩu"
                     app:boxStrokeWidth="0.5dp"
-                    app:endIconMode="password_toggle"
-                    >
+                    app:endIconMode="password_toggle">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"
-                        android:textSize="11dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -149,22 +147,21 @@
                 android:orientation="vertical"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
-                android:visibility="gone"
-                >
+                android:visibility="gone">
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Số điện thoại di động"
-                    app:boxStrokeWidth="0.5dp"
-                    >
+                    app:boxStrokeWidth="0.5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/phoneSignup"
                         android:layout_width="match_parent"
-                        android:textSize="11dp"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -173,14 +170,13 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Họ và tên"
-                    app:boxStrokeWidth="0.5dp"
-                    >
+                    app:boxStrokeWidth="0.5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/nameSignup"
                         android:layout_width="match_parent"
-                        android:textSize="11dp"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -190,14 +186,13 @@
                     android:layout_margin="5dp"
                     android:hint="Mật khẩu"
                     app:boxStrokeWidth="0.5dp"
-                    app:endIconMode="password_toggle"
-                    >
+                    app:endIconMode="password_toggle">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/passwordSignup"
                         android:layout_width="match_parent"
-                        android:textSize="11dp"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -206,13 +201,13 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Email"
-                    app:boxStrokeWidth="0.5dp"
-                    >
+                    app:boxStrokeWidth="0.5dp">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/emailSignup"
                         android:layout_width="match_parent"
-                        android:textSize="11dp"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -227,8 +222,7 @@
                 android:elevation="15dp"
                 android:gravity="center"
                 android:text="ĐĂNG NHẬP"
-                android:textAllCaps="false"
-                />
+                android:textAllCaps="false" />
 
             <Button
                 android:id="@+id/signupBtn"
@@ -242,8 +236,7 @@
                 android:gravity="center"
                 android:text="ĐĂNG KÝ"
                 android:textAllCaps="false"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"

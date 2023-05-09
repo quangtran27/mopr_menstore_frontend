@@ -1,13 +1,15 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
@@ -20,6 +22,7 @@ import retrofit2.Response
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthenticationBinding
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,10 +96,14 @@ class AuthenticationActivity : AppCompatActivity() {
                             //Inform success login
                             Toast.makeText(
                                 applicationContext,
-                                "Đăng nhập thành công",
+                                "Đăng nhập thành công!",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            user.birthday?.let { Log.d("DATE", it.toString()) }
+
+                            //Forward to HomePage
+                            finish()
+                            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                            startActivity(intent)
                         }
                     } else {
                         // Login failed, inform failed login
@@ -159,10 +166,10 @@ class AuthenticationActivity : AppCompatActivity() {
         else{
             //Initialize a UserApiService object from the Retrofit object
             val userSignupApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
-            userSignupApi.sigup(phone,name,password,email).enqueue(object : Callback<User> {
+            userSignupApi.signup(phone,name,password,email).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful) {
-                        // Đăng ký thành công
+                        // Register successfully
                         if(response.code()==201){
                             Toast.makeText(
                                 applicationContext,
@@ -171,7 +178,7 @@ class AuthenticationActivity : AppCompatActivity() {
                             ).show()
                         }
                     } else {
-                        // Lỗi dữ liệu đầu vào
+                        // Register error
                         Toast.makeText(
                             applicationContext,
                             "Số điện thoại/email đã được sử dụng!",
@@ -191,14 +198,20 @@ class AuthenticationActivity : AppCompatActivity() {
         }
 
     }
+
+    //A range of number must begin with 0 and have 10 characters
     private fun isPhoneNumberValid(phoneNumber: String): Boolean {
         val regex = Regex("^(\\+84|0)\\d{9,10}$")
         return regex.matches(phoneNumber)
     }
+
+    //Password must contain more than 7 characters and have some special characters
     private fun isPasswordValid(password: String):Boolean {
         val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&_+=\\-])[^\\s]{8,}\$"
         return password.matches(passwordPattern.toRegex())
     }
+
+    //Email must obey Gmail format
     private fun isGmailValid(email: String): Boolean {
         val pattern = Regex("^[a-zA-Z0-9._%+-]+@gmail\\.com$")
         return pattern.matches(email)
