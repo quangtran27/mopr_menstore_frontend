@@ -43,6 +43,22 @@ class ProductApiUtil(private val productApiService: ProductApiService) {
 		}
 	}
 
+	suspend fun getDetail(productDetailId: Int): ProductDetail? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getDetail(productDetailId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
+				} else {
+					Log.d(TAG, "getProductDetails (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProductDetails (Exception): ${e.message}")
+			}
+			return@withContext null
+		}
+	}
+
 	suspend fun getDetails(productId: Int): List<ProductDetail> {
 		return withContext(Dispatchers.IO) {
 			try {

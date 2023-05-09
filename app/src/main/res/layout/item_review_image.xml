@@ -12,3 +12,4 @@
         android:src="@drawable/ic_launcher_background"
         tools:ignore="ContentDescription" />
 </LinearLayout>
+
