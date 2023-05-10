@@ -3,126 +3,143 @@ package com.mopr.menstore.fragments.main
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
-import android.view.Gravity
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mopr.menstore.R
+import com.mopr.menstore.activities.SearchActivity
 import com.mopr.menstore.adapters.CategoryAdapter
 import com.mopr.menstore.adapters.CompactProductAdapter
 import com.mopr.menstore.api.ApiException
+import com.mopr.menstore.api.CategoryApiService
 import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.databinding.FragmentHomeBinding
 import com.mopr.menstore.models.Category
 import com.mopr.menstore.models.Product
+import com.mopr.menstore.models.ProductDetail
+import com.mopr.menstore.models.ProductImage
+import com.mopr.menstore.utils.CategoryApiUtil
 import com.mopr.menstore.utils.ProductApiUtil
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 	private lateinit var binding: FragmentHomeBinding
+	private var categories: List<Category> = emptyList()
+	private var topSaleProducts: List<Product> = emptyList()
+	private var latestProducts: List<Product> = emptyList()
+	private var topSaleProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
+	private var topSaleProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
+	private var latestProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
+	private var latestProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = FragmentHomeBinding.inflate(layoutInflater)
 
-		binding.ibCart.setOnClickListener {
+		binding.header.etSearch.isFocusable = false
+		binding.header.etSearch.setOnClickListener {
+			startActivity(Intent(requireContext(), SearchActivity::class.java))
+		}
+
+		binding.header.ibCart.setOnClickListener {
 //			startActivity(Intent(requireContext(), CartActivity))
 		}
 
-		fetchData()
+		lifecycleScope.launch {
+			fetchData()
+			bindData()
+		}
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 		return binding.root
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	private fun fetchData() {
-		val productApiService = RetrofitClient.getRetrofit().create(ProductApiService::class.java)
-		val productApiUtil = ProductApiUtil(productApiService)
+	private suspend fun fetchData() {
+		val productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
+		val categoryApiUtil = CategoryApiUtil(RetrofitClient.getRetrofit().create(CategoryApiService::class.java))
 
-		lifecycleScope.launch {
-			try {
-				val categories = productApiUtil.getAllCategories()
-				bindCategories(categories)
-
-				val topSaleProducts = productApiUtil.getTopSaleProducts()
-				bindTopSaleProducts(topSaleProducts)
-
-				val latestProducts = productApiUtil.getLatestProducts()
-				bindLatestProducts(latestProducts)
-
-			} catch (e: ApiException) {
-				Toast.makeText(requireActivity(), e.message, Toast.LENGTH_LONG).show()
+		try {
+			categories = categoryApiUtil.getAllCategories()
+			topSaleProducts = productApiUtil.getTopSale()
+			for (product in topSaleProducts) {
+				topSaleProductDetailsList.add(productApiUtil.getDetails(product.id))
+				topSaleProductImagesList.add(productApiUtil.getImages(product.id))
 			}
+			latestProducts = productApiUtil.getLatest()
+			for (product in latestProducts) {
+				latestProductDetailsList.add(productApiUtil.getDetails(product.id))
+				latestProductImagesList.add(productApiUtil.getImages(product.id))
+			}
+		} catch (e: ApiException) {
+			Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
-	private fun bindTopSaleProducts(products: List<Product>) {
+	private fun bindData() {
+		bindCategories(categories)
+		bindTopSaleProducts(topSaleProducts, topSaleProductDetailsList, topSaleProductImagesList)
+		bindLatestProducts(latestProducts, latestProductDetailsList, latestProductImagesList)
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	private fun bindTopSaleProducts(products: List<Product>, topSaleProductDetailsList: List<List<ProductDetail>>, topSaleProductImagesList: List<List<ProductImage?>>) {
 		if (products.isNotEmpty()) {
-			val compactProductAdapter = CompactProductAdapter(requireActivity(), products)
-			val layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+			val compactProductAdapter = CompactProductAdapter(requireContext(), products, topSaleProductDetailsList, topSaleProductImagesList)
+			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 			binding.rvTopSaleProducts.setHasFixedSize(true)
 			binding.rvTopSaleProducts.layoutManager = layoutManager
 			binding.rvTopSaleProducts.adapter = compactProductAdapter
 
 			compactProductAdapter.notifyDataSetChanged()
-		} else {
-			binding.nsvTopSaleProducts.removeAllViews()
-			binding.nsvTopSaleProducts.addView(makeEmptyMessageTextView("Sản phẩm trống"))
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
-	private fun bindLatestProducts(products: List<Product>) {
+	@SuppressLint("NotifyDataSetChanged")
+	private fun bindLatestProducts(products: List<Product>, latestProductDetailsList: List<List<ProductDetail>>, latestProductImagesList: List<List<ProductImage?>>) {
 		if (products.isNotEmpty()) {
-			val compactProductAdapter = CompactProductAdapter(requireActivity(), products)
-			val layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+			val compactProductAdapter = CompactProductAdapter(requireContext(), products, latestProductDetailsList, latestProductImagesList)
+			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 			binding.rvLatestProduct.setHasFixedSize(true)
 			binding.rvLatestProduct.layoutManager = layoutManager
 			binding.rvLatestProduct.adapter = compactProductAdapter
 
 			compactProductAdapter.notifyDataSetChanged()
-		} else {
-			binding.nsvLatestProduct.removeAllViews()
-			binding.nsvLatestProduct.addView(makeEmptyMessageTextView("Sản phẩm trống"))
 		}
 	}
 
-	@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+	@SuppressLint("NotifyDataSetChanged")
 	private fun bindCategories(categories: List<Category>) {
 		if (categories.isNotEmpty()) {
-			val categoryAdapter = CategoryAdapter(requireActivity(), categories)
-			val layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+			val categoryAdapter = CategoryAdapter(requireContext(), categories)
+			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
 			binding.rvCategories.setHasFixedSize(true)
 			binding.rvCategories.layoutManager = layoutManager
 			binding.rvCategories.adapter = categoryAdapter
 
 			categoryAdapter.notifyDataSetChanged()
-		} else {
-			binding.nsvCategories.removeAllViews()
-			binding.nsvCategories.addView(makeEmptyMessageTextView("Danh mục trống"))
 		}
 	}
 
-	private fun makeEmptyMessageTextView(message: String): TextView {
-		val textView = TextView(requireActivity())
-		textView.text = message
-		textView.setTextColor(ContextCompat.getColor(requireActivity(), R.color.text_gray))
-		textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-		textView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-		textView.gravity = Gravity.CENTER
-		return textView
+	companion object {
+		/**
+		 * @return A new instance of fragment HomeFragment.
+		 */
+		// TODO: Rename and change types and number of parameters
+		@JvmStatic
+		fun newInstance() =
+			HomeFragment().apply {
+				arguments = Bundle().apply {
+				}
+			}
+
+		const val TAG = "HomeFragment"
 	}
 }

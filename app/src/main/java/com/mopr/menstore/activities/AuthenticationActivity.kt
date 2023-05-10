@@ -33,7 +33,7 @@ class AuthenticationActivity : AppCompatActivity() {
         //Processing click sign up button
         binding.signup.setOnClickListener {
             binding.login.background = null
-            binding.signup.background = resources.getDrawable(R.drawable.switch_trcks,null)
+            binding.signup.background = resources.getDrawable(R.drawable.switch_trcks, null)
             binding.loginLayout.visibility = View.GONE
             binding.signupLayout.visibility = View.VISIBLE
             binding.loginBtn.visibility = View.GONE
@@ -42,8 +42,8 @@ class AuthenticationActivity : AppCompatActivity() {
         }
         //Processing click Login button
         binding.login.setOnClickListener {
-            binding.signup.background =null
-            binding.login.background = resources.getDrawable(R.drawable.switch_trcks,null)
+            binding.signup.background = null
+            binding.login.background = resources.getDrawable(R.drawable.switch_trcks, null)
             binding.signupLayout.visibility = View.GONE
             binding.loginLayout.visibility = View.VISIBLE
             binding.signupBtn.visibility = View.GONE
@@ -74,21 +74,19 @@ class AuthenticationActivity : AppCompatActivity() {
         if (TextUtils.isEmpty(phone)) {
             binding.username.error = "Vui lòng nhập thông tin!"
             binding.username.requestFocus()
-        }
-        else if(!isPhoneNumberValid(phone)){
+        } else if (!isPhoneNumberValid(phone)) {
             binding.username.error = "Số điện thoại không hợp lệ!"
             binding.username.requestFocus()
-        }
-        else{
+        } else {
             //Initialize a UserApiService object from the Retrofit object
             val userLoginApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
 
-            userLoginApi.login(phone,password).enqueue(object : Callback<User>{
+            userLoginApi.login(phone, password).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful) {
                         // Login success, handle response data
                         val userResp = response.body()
-                        if(userResp != null){
+                        if (userResp != null) {
                             val user: User = userResp
                             //Save user info
                             SharePrefManager.getInstance(applicationContext).saveUser(user)
@@ -102,7 +100,8 @@ class AuthenticationActivity : AppCompatActivity() {
 
                             //Forward to HomePage
                             finish()
-                            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                            val intent =
+                                Intent(this@AuthenticationActivity, MainActivity::class.java)
                             startActivity(intent)
                         }
                     } else {
@@ -127,7 +126,7 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
-    private fun signup(){
+    private fun signup() {
         //Get info from UI
         val phone = binding.phoneSignup.text.toString()
         val name = binding.nameSignup.text.toString()
@@ -142,35 +141,29 @@ class AuthenticationActivity : AppCompatActivity() {
         if (TextUtils.isEmpty(email)) {
             binding.emailSignup.error = "Vui lòng nhập thông tin!"
             binding.emailSignup.requestFocus()
-        }
-        else if(isGmailValid(email)){
+        } else if (isGmailValid(email)) {
             binding.emailSignup.error = "Email không đúng!"
             binding.emailSignup.requestFocus()
-        }
-        else if (TextUtils.isEmpty(phone)) {
+        } else if (TextUtils.isEmpty(phone)) {
             binding.phoneSignup.error = "Vui lòng nhập thông tin!"
             binding.phoneSignup.requestFocus()
-        }
-        else if(!isPhoneNumberValid(phone)){
+        } else if (!isPhoneNumberValid(phone)) {
             binding.phoneSignup.error = "Số điện thoại không hợp lệ!"
             binding.phoneSignup.requestFocus()
-        }
-       else if(TextUtils.isEmpty(password)){
-           binding.passwordSignup.error = "Vui lòng nhập thông tin!"
-           binding.passwordSignup.requestFocus()
-       }
-       else if(!isPasswordValid(password)){
+        } else if (TextUtils.isEmpty(password)) {
+            binding.passwordSignup.error = "Vui lòng nhập thông tin!"
+            binding.passwordSignup.requestFocus()
+        } else if (!isPasswordValid(password)) {
             binding.passwordSignup.error = "Mật khẩu không đúng định dạng!"
             binding.passwordSignup.requestFocus()
-        }
-        else{
+        } else {
             //Initialize a UserApiService object from the Retrofit object
             val userSignupApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
-            userSignupApi.signup(phone,name,password,email).enqueue(object : Callback<User> {
+            userSignupApi.signup(phone, name, password, email).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful) {
                         // Register successfully
-                        if(response.code()==201){
+                        if (response.code() == 201) {
                             Toast.makeText(
                                 applicationContext,
                                 "Đăng ký thành công!",
@@ -206,7 +199,7 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     //Password must contain more than 7 characters and have some special characters
-    private fun isPasswordValid(password: String):Boolean {
+    private fun isPasswordValid(password: String): Boolean {
         val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&_+=\\-])[^\\s]{8,}\$"
         return password.matches(passwordPattern.toRegex())
     }

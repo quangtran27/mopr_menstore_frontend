@@ -40,7 +40,7 @@ class SharePrefManager private constructor(private val context: Context) {
 		val id = sharedPreferences.getString(KEY_ID, "-1")
 		val phone = sharedPreferences.getString(KEY_PHONE, "")
 		val password = sharedPreferences.getString(KEY_PASSWORD, "")
-		return User(id!!, "", phone!!, password!!, "", "", "", "")
+		return User(id!!, "", phone!!, password!!, "", "", "", "","")
 	}
 
 	//Logout

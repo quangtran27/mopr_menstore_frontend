@@ -5,6 +5,7 @@
     <color name="star">#f8cf0b</color>
 
     <color name="primary">#222222</color>
+    <color name="text_primary">#333333</color>
     <color name="text_gray">#8d8d8d</color>
     <color name="text_danger">#dd3c46</color>
     <color name="text_link">#386ea3</color>

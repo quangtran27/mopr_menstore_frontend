@@ -1,106 +1,147 @@
 package com.mopr.menstore.utils
 
 import android.util.Log
-import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.ProductApiService
-import com.mopr.menstore.models.Category
+import com.mopr.menstore.models.ListResponse
 import com.mopr.menstore.models.Product
+import com.mopr.menstore.models.ProductDetail
+import com.mopr.menstore.models.ProductImage
+import com.mopr.menstore.models.Review
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.http.Field
 
 class ProductApiUtil(private val productApiService: ProductApiService) {
-	suspend fun getTopSaleProducts(): List<Product> {
+	suspend fun getAll(options: Map<String, String>): ListResponse<Product>? {
 		return withContext(Dispatchers.IO) {
 			try {
-				val response = productApiService.getTopSaleProduct().execute()
+				val response = productApiService.getAll(options).execute()
 				if (response.isSuccessful) {
-					val allProducts = response.body()!!
-					if (allProducts.success) {
-						return@withContext allProducts.data
-					} else {
-						throw ApiException("Error getting top sale products. Status code: ${response.code()}")
-					}
+					return@withContext response.body()
 				} else {
-					throw ApiException("Error getting top sale products. Status code: ${response.code()}")
+					Log.d(TAG, "getAllProduct (Error): status code ${response.code()}")
 				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getAllProduct (Exception): ${e.message}")
 			}
-			catch (e: Exception) {
-				Log.d("getTopSaleProducts", e.message.toString())
+			return@withContext null
+		}
+	}
+
+	suspend fun get(productId: Int): Product? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.get(productId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
+				} else {
+					Log.d(TAG, "getProduct (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProduct (Exception): ${e.message}")
+			}
+			return@withContext null
+		}
+	}
+
+	suspend fun getDetail(productDetailId: Int): ProductDetail? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getDetail(productDetailId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
+				} else {
+					Log.d(TAG, "getProductDetails (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProductDetails (Exception): ${e.message}")
+			}
+			return@withContext null
+		}
+	}
+
+	suspend fun getDetails(productId: Int): List<ProductDetail> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getDetails(productId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()?.toList<ProductDetail>()
+						?: emptyList<ProductDetail>()
+				} else {
+					Log.d(TAG, "getProductDetails (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProductDetails (Exception): ${e.message}")
+			}
+			return@withContext emptyList<ProductDetail>()
+		}
+	}
+
+	suspend fun getImages(productId: Int): List<ProductImage> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getImages(productId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()?.toList<ProductImage>()
+						?: emptyList<ProductImage>()
+				} else {
+					Log.d(TAG, "getProductImages (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProductImages (Exception): ${e.message}")
+			}
+			return@withContext emptyList<ProductImage>()
+		}
+	}
+
+	suspend fun getReviews(productId: Int): List<Review> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getReviews(productId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()?.toList<Review>() ?: emptyList<Review>()
+				} else {
+					Log.d(TAG, "getProductReviews (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getProductReviews (Exception): ${e.message}")
+			}
+			return@withContext emptyList<Review>()
+		}
+	}
+
+	suspend fun getTopSale(): List<Product> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getTopSale().execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()?.toList<Product>() ?: emptyList<Product>()
+				} else {
+					Log.d(TAG, "getTopSaleProducts (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getTopSaleProducts (Exception): ${e.message}")
 			}
 			return@withContext listOf()
 		}
 	}
 
-	suspend fun getLatestProducts(): List<Product> {
+	suspend fun getLatest(): List<Product> {
 		return withContext(Dispatchers.IO) {
 			try {
-				val response = productApiService.getLatestProducts().execute()
-
+				val response = productApiService.getLatest().execute()
 				if (response.isSuccessful) {
-					val allProducts = response.body()!!
-					if (allProducts.success) {
-						return@withContext allProducts.data
-					} else {
-						throw ApiException("Error getting latest products. Status code: ${response.code()}")
-					}
+					return@withContext response.body()?.toList<Product>() ?: emptyList<Product>()
 				} else {
-					throw ApiException("Error getting latest products. Status code: ${response.code()}")
+					Log.d(TAG, "getLatestProducts (Error): status code ${response.code()}")
 				}
-			}
-			catch (e: Exception) {
-				Log.d("getTopSaleProducts", e.message.toString())
+			} catch (e: Exception) {
+				Log.d(TAG, "getLatestProducts (Exception): ${e.message}")
 			}
 			return@withContext listOf()
 		}
 	}
 
-	suspend fun getAllCategories(): List<Category> {
-		return withContext(Dispatchers.IO) {
-			try {
-				val response = productApiService.getAllCategories().execute()
-				if (response.isSuccessful) {
-					val allCategories = response.body()!!
-					if (allCategories.success) {
-						return@withContext allCategories.data
-					} else {
-						throw ApiException("Error getting categories. Status code: ${response.code()}")
-					}
-				} else {
-					throw ApiException("Error getting categories. Status code: ${response.code()}")
-				}
-			} catch (e: Exception) {
-				return@withContext listOf()
-			}
-		}
+	companion object {
+		const val TAG = "ProductApiUtil"
 	}
-
-	suspend fun search(
-		keyword: String = "",
-		sortBy: String = "price",
-		order: String = "asc",
-		categoryId: Int = 0,
-		minPrice: Int = 0,
-		maxPrice: Int = 99999999,
-		review: Int = 0,
-	): List<Product> {
-		return withContext(Dispatchers.IO) {
-			try {
-				val response = productApiService.search(keyword, sortBy, order, categoryId, minPrice, maxPrice, review).execute()
-				if (response.isSuccessful) {
-					val allProductsResponse = response.body()!!
-					if (allProductsResponse.success) {
-						return@withContext allProductsResponse.data
-					} else {
-						throw ApiException("Error searching product. Status code: ${response.code()}")
-					}
-				} else {
-					throw ApiException("Error searching product. Status code: ${response.code()}")
-				}
-			} catch (e: Exception) {
-				Log.d("search_product", e.message.toString())
-				return@withContext listOf()
-			}
-		}
-	}
- }
+}

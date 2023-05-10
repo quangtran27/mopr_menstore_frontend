@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.main.MeFragment">
+    tools:context=".fragments.user.MeFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -19,9 +19,9 @@
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableLeft="@drawable/arrow_back"
+                android:layout_height="wrap_content"
                 android:text="Tài khoản cá nhân"
+                android:paddingTop="10dp"
                 android:textSize="20dp"
                 android:textAlignment="center"
                 android:gravity="center"
@@ -29,7 +29,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageProfile"
+                android:id="@+id/ivAvatar"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_marginTop="21dp"
@@ -49,7 +49,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.32"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageProfile" />
+                app:layout_constraintTop_toBottomOf="@+id/ivAvatar" />
 
             <TextView
                 android:id="@+id/tvUserName"
@@ -64,7 +64,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/textView5"
-                app:layout_constraintTop_toBottomOf="@+id/imageProfile" />
+                app:layout_constraintTop_toBottomOf="@+id/ivAvatar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,6 +94,12 @@
               android:gravity="end"
               android:text="Xem chi tiết >" />
       </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/text_gray" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -138,7 +144,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="4"
-            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
             <TextView
@@ -159,6 +164,13 @@
                 android:gravity="end"
                 android:text="Xem chi tiết >" />
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/text_gray" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -196,11 +208,11 @@
                             tools:layout_editor_absoluteY="0dp" />
 
                         <TextView
+                            android:id="@+id/numConfirming"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#EC0B0B"
                             android:textStyle="bold"
-                            android:text="0"
                             app:layout_constraintStart_toEndOf="@+id/tvConfirming"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -216,15 +228,15 @@
                             android:layout_height="match_parent"
                             android:drawableTop="@drawable/confirmed"
                             android:gravity="center"
-                            android:text="Đã xác\n nhận"
+                            android:text="Chờ lấy\n hàng"
                             android:textSize="12dp" />
 
                         <TextView
+                            android:id="@+id/numConfirmed"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#EC0B0B"
                             android:textStyle="bold"
-                            android:text="0"
                             app:layout_constraintStart_toEndOf="@+id/tvConfirmed"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -244,11 +256,11 @@
                             android:textSize="12dp" />
 
                         <TextView
+                            android:id="@+id/numDelivering"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#EC0B0B"
                             android:textStyle="bold"
-                            android:text="0"
                             app:layout_constraintStart_toEndOf="@+id/tvShipping"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -269,11 +281,11 @@
                             tools:layout_editor_absoluteY="-3dp" />
 
                     <TextView
+                        android:id="@+id/numDelivered"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#EC0B0B"
                         android:textStyle="bold"
-                        android:text="0"
                         app:layout_constraintStart_toEndOf="@+id/tvShipped"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -294,11 +306,11 @@
                             tools:layout_editor_absoluteY="-2dp" />
 
                         <TextView
+                            android:id="@+id/numCanceled"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#EC0B0B"
                             android:textStyle="bold"
-                            android:text="0"
                             app:layout_constraintStart_toEndOf="@+id/tvCancelled"
                             app:layout_constraintTop_toTopOf="parent" />
 

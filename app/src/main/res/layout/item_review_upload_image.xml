@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ImageView
+        android:id="@+id/imvReview"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/ic_launcher_background"
+        />
+    <TextView
+        android:id="@+id/tvRemoveImage"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:text="X"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:background="#99000000"
+        android:gravity="center"
+        android:layout_gravity="top|end"/>
+</FrameLayout>

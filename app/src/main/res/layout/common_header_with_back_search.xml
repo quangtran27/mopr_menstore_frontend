@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <ImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        android:background="#00ffffff"
+        android:importantForAccessibility="no"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pic_arrow_back" />
+
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:background="@drawable/background_search_primary_border_left"
+        android:drawablePadding="12dp"
+        android:hint="Nhập tên sản phẩm"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:paddingHorizontal="16dp"
+        android:textColorHint="#959595"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText" />
+
+    <ImageButton
+        android:id="@+id/ibSearch"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/background_primary_right_radius"
+        android:src="@drawable/ic_search_white"
+        tools:ignore="ContentDescription" />
+
+</LinearLayout>

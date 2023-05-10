@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_gray"
     tools:context=".activities.SearchActivity">
+
+    <include android:id="@+id/header" layout="@layout/common_header_with_back_search" />
+
+    <!-- Search history -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
