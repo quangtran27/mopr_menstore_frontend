@@ -3,11 +3,7 @@ package com.mopr.menstore.api
 import com.mopr.menstore.models.Cart
 import com.mopr.menstore.models.CartItem
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface CartApiService {
 	@GET("carts/{cartId}")
@@ -23,4 +19,6 @@ interface CartApiService {
 		@Field("product_detail_id") productDetailId: Int,
 		@Field("quantity") quantity: Int
 	): Call<CartItem>
+
+
 }

@@ -1,12 +1,12 @@
 package com.mopr.menstore.utils
 
 import android.util.Log
+import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.CartApiService
 import com.mopr.menstore.models.Cart
 import com.mopr.menstore.models.CartItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 class CartApiUtil(private val cartApiService: CartApiService) {
 	suspend fun getCart(cartId: Int): Cart? {
@@ -57,4 +57,23 @@ class CartApiUtil(private val cartApiService: CartApiService) {
 	companion object {
 		const val TAG = "CartApiUtil"
 	}
+	suspend fun getAllCartItem(cartId: Int): List<CartItem> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val cartItems = cartApiService.getCartItems(cartId).execute()
+				//Log.d("ChauAnh", response.body().toString())
+				if (cartItems.isSuccessful) {
+					val cartItems = cartItems.body()!!
+					return@withContext cartItems
+				}
+				else {
+					throw ApiException("Error getting cart items. Status code: ${cartItems.code()}")
+				}
+			}catch (e: Exception) {
+				Log.d("chauanh", e.message.toString())
+			}
+			return@withContext listOf()
+		}
+	}
+
 }

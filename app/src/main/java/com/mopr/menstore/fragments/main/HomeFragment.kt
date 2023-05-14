@@ -3,7 +3,6 @@ package com.mopr.menstore.fragments.main
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mopr.menstore.activities.CartActivity
 import com.mopr.menstore.activities.SearchActivity
 import com.mopr.menstore.adapters.CategoryAdapter
 import com.mopr.menstore.adapters.CompactProductAdapter
@@ -46,7 +46,10 @@ class HomeFragment : Fragment() {
 		}
 
 		binding.header.ibCart.setOnClickListener {
-//			startActivity(Intent(requireContext(), CartActivity))
+			activity?.let{
+				val intent = Intent (it, CartActivity::class.java)
+				it.startActivity(intent)
+			}
 		}
 
 		lifecycleScope.launch {

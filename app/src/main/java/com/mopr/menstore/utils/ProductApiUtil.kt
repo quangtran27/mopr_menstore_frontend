@@ -1,12 +1,9 @@
 package com.mopr.menstore.utils
 
 import android.util.Log
+import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.ProductApiService
-import com.mopr.menstore.models.ListResponse
-import com.mopr.menstore.models.Product
-import com.mopr.menstore.models.ProductDetail
-import com.mopr.menstore.models.ProductImage
-import com.mopr.menstore.models.Review
+import com.mopr.menstore.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -124,8 +121,23 @@ class ProductApiUtil(private val productApiService: ProductApiService) {
 			return@withContext listOf()
 		}
 	}
+	suspend fun getProductDetail(productDetailId: Int): ProductDetail?{
+		return withContext(Dispatchers.IO){
+			try {
+				val response = productApiService.getProductDetail(productDetailId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()!!
+				}else{
+					throw ApiException("Error getting product. Status code: ${response.code()}")
+				}
+			}catch (e: Exception){
+				return@withContext null
+			}
+		}
+	}
 
 	companion object {
 		const val TAG = "ProductApiUtil"
 	}
+
 }

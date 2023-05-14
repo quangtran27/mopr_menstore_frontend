@@ -13,5 +13,5 @@ data class ProductDetail(
 	val price: Int,
 	val salePrice: Int,
 	val size: String,
-	val color: String,
+	var color: String,
 ) : Parcelable
