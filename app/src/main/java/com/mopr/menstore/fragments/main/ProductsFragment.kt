@@ -1,17 +1,11 @@
 package com.mopr.menstore.fragments.main
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.util.TypedValue
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,22 +26,19 @@ import com.mopr.menstore.utils.CategoryApiUtil
 import com.mopr.menstore.utils.ProductApiUtil
 import kotlinx.coroutines.launch
 
-
-private const val ARG_CATEGORY_ID = "categoryId"
-
 class ProductsFragment : Fragment() {
-	private lateinit var binding: FragmentProductsBinding
+	private var categoryId: Int = 0
 	private var currentPage = 1
 	private var total = 0
-	private var categoryId: Int = 0
-	private var products: MutableList<Product> = mutableListOf()
+	private var isScrolling = false
 	private var categories: MutableList<Category> = mutableListOf()
+	private var products: MutableList<Product> = mutableListOf()
 	private var productDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
 	private var productImagesList: MutableList<List<ProductImage>> = mutableListOf()
+	private lateinit var binding: FragmentProductsBinding
 	private lateinit var productApiUtil: ProductApiUtil
 	private lateinit var categoryApiUtil: CategoryApiUtil
 	private lateinit var categoryAdapter: CategoryAdapter
-	private var isScrolling = false
 	private lateinit var productAdapter: ProductAdapter
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,33 +53,42 @@ class ProductsFragment : Fragment() {
 		binding.header.etSearch.setOnClickListener {
 			startActivity(Intent(requireContext(), SearchActivity::class.java))
 		}
-		binding.progressBar.visibility = View.GONE
+		binding.srlProducts.setOnRefreshListener {
+			products = mutableListOf()
+			productDetailsList = mutableListOf()
+			productImagesList = mutableListOf()
+			currentPage = 1
+			total = 0
+			fetchData()
+		}
 
 		productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
 		categoryApiUtil = CategoryApiUtil(RetrofitClient.getRetrofit().create(CategoryApiService::class.java))
 
+		fetchData()
+	}
+
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = binding.root
+
+	private fun fetchData() {
 		lifecycleScope.launch {
-			fetchData()
-			bindData()
+			launch {
+				fetchCategories()
+				bindCategories()
+			}
+			launch {
+				fetchProducts()
+				bindProducts()
+			}
+			binding.srlProducts.isRefreshing = false
 		}
 	}
 
-	override fun onCreateView(
-		inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-	): View {
-		return binding.root
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	private suspend fun fetchData() {
+	private suspend fun fetchCategories() {
 		categories = categoryApiUtil.getAllCategories() as MutableList<Category>
 		categories.add(0, Category(0, "Tất cả", "", null))
-
-		// Get list products by category id
-		fetchProducts()
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
 	private suspend fun fetchProducts() {
 		val options: Map<String, String> = mapOf(
 			"page" to "$currentPage", "category_id" to "$categoryId"
@@ -103,38 +103,26 @@ class ProductsFragment : Fragment() {
 		}
 	}
 
-	private fun bindData() {
-		bindCategories()
-		bindProducts(products, productDetailsList, productImagesList)
-	}
-
 	private fun bindCategories() {
 		categoryAdapter = CategoryAdapter(requireContext(), categories, categoryId)
 		categoryAdapter.setOnItemClickListener(object : CategoryAdapter.OnItemClickListener {
 			override fun onItemClick(categoryId: Int) {
 				val fragment = newInstance(categoryId)
 				requireActivity().supportFragmentManager.beginTransaction()
-					.replace(R.id.flMainFragmentContainer, fragment).addToBackStack(null)
-					.commit()
+					.replace(R.id.flMainFragmentContainer, fragment).addToBackStack(null).commit()
 			}
 		})
 		binding.rvCategories.setHasFixedSize(true)
 		binding.rvCategories.adapter = categoryAdapter
-		binding.rvCategories.layoutManager?.scrollToPosition(categories.indexOfFirst {
-			it.id == categoryId
-		})
+		binding.rvCategories.layoutManager?.scrollToPosition(categories.indexOfFirst { it.id == categoryId })
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	private fun bindProducts(
-		products: List<Product>,
-		productDetailsList: List<List<ProductDetail>>,
-		productImagesList: List<List<ProductImage?>>
-	) {
+	private fun bindProducts() {
 		productAdapter = ProductAdapter(requireContext(), products, productDetailsList, productImagesList)
 		binding.rvProducts.apply {
 			setHasFixedSize(true)
 			adapter = productAdapter
+			// Load more when scroll to bottom
 			addOnScrollListener(object : RecyclerView.OnScrollListener() {
 				override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 					if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
@@ -152,44 +140,24 @@ class ProductsFragment : Fragment() {
 						currentPage += 1
 						lifecycleScope.launch {
 							binding.progressBar.visibility = View.VISIBLE
-							Log.d(TAG, "onScrolled: fetch more with current page: $currentPage")
 							fetchProducts()
+							bindProducts()
 							isScrolling = false
 							binding.progressBar.visibility = View.GONE
-							productAdapter.notifyDataSetChanged()
 						}
 					}
-
 				}
 			})
 		}
 	}
 
-	private fun makeMessageTextView(message: String): TextView {
-		val textView = TextView(requireContext())
-		textView.text = message
-		textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_gray))
-		textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-		textView.layoutParams = ViewGroup.LayoutParams(
-			ViewGroup.LayoutParams.MATCH_PARENT,
-			ViewGroup.LayoutParams.WRAP_CONTENT
-		)
-		textView.gravity = Gravity.CENTER
-		return textView
-	}
-
 	companion object {
-		/**
-		 * @param categoryId Category ID.
-		 * @return A new instance of fragment ProductsFragment.
-		 */
 		@JvmStatic
 		fun newInstance(categoryId: Int) = ProductsFragment().apply {
 			arguments = Bundle().apply {
-				putInt(ARG_CATEGORY_ID, categoryId)
+				putInt("categoryId", categoryId)
 			}
 		}
-
 		const val TAG = "ProductsFragment"
 	}
 }

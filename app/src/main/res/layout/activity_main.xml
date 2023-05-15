@@ -19,7 +19,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnMenu"
         android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_height="60dp"
         android:background="@color/white"
         app:itemTextColor="#222"
         app:itemIconTint="@color/primary"
