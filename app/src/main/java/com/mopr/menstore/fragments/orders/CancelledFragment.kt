@@ -22,25 +22,88 @@ import kotlinx.coroutines.launch
 
 private const val USER_ID = "user_id"
 
-
-class CancelledFragment : Fragment(), OrderAdapter.OnItemClickListener {
+class CancelledFragment : Fragment() {
     private var userId: Int = 0
+
+    private lateinit var orderApiUtil: OrderApiUtil
+    private lateinit var productApiUtil: ProductApiUtil
+
     private lateinit var binding: FragmentCancelledBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentCancelledBinding.inflate(layoutInflater)
         arguments?.let {
             userId = it.getInt(USER_ID)
         }
-        binding = FragmentCancelledBinding.inflate(layoutInflater)
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            fetchData(userId)
+        }
+
+        orderApiUtil = OrderApiUtil(RetrofitClient.getRetrofit().create(OrderApiService::class.java))
+        productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
+
         fetchData(userId)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return binding.root
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun fetchData(userId: Int){
+        lifecycleScope.launch {
+            try {
+                val ordersByUser = orderApiUtil.getOrdersByUser(userId)
+                val sortOrderByUser = ordersByUser.reversed()
+
+                val ordersToCancelled : MutableList<Order> = mutableListOf()
+                for (item in sortOrderByUser) if (item.status == 5) ordersToCancelled.add(item)
+                val firstOrderProducts : MutableList<Product> = mutableListOf()
+                val listOrderItems: MutableList<List<OrderItem>> = mutableListOf()
+                val firstOrderProductDetails: MutableList<ProductDetail> = mutableListOf()
+                val firstProductImages: MutableList<ProductImage> = mutableListOf()
+                for (item in ordersToCancelled) {
+                    val orderItems = orderApiUtil.getOrderItems(item.id)
+                    val productDetail = productApiUtil.getDetail(orderItems[0].productDetailId)
+                    val product = productApiUtil.get(productDetail!!.productId)
+                    val image = productApiUtil.getImages(productDetail.productId)
+                    listOrderItems.add(orderItems)
+                    firstOrderProducts.add(product!!)
+                    firstOrderProductDetails.add(productDetail)
+                    firstProductImages.add(image[0])
+                }
+
+                bindOrdersCancelledByUser(ordersToCancelled, listOrderItems, firstOrderProducts,firstOrderProductDetails,firstProductImages)
+
+                binding.swipeRefreshLayout.isRefreshing = false
+            }catch (e: Exception) {
+                Log.d(ToPayFragment.TAG, "fetchData: ${e.message.toString()}")
+            }
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
+    private fun bindOrdersCancelledByUser(orders: List<Order>, listOrderItems: List<List<OrderItem>>, firstOrderProducts: List<Product>, firstOrderProductDetails: List<ProductDetail>, firstProductImages: List<ProductImage>){
+        if(orders.isNotEmpty() && firstOrderProducts.isNotEmpty()){
+            val orderAdapter= OrderAdapter(this@CancelledFragment, orders,listOrderItems, firstOrderProducts,firstOrderProductDetails,firstProductImages, 5)
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rcOrders.setHasFixedSize(true)
+            binding.rcOrders.adapter= orderAdapter
+            binding.rcOrders.layoutManager= layoutManager
+
+            orderAdapter.notifyDataSetChanged()
+
+            binding.tvOrders.visibility = View.GONE
+            binding.svOrders.visibility = View.VISIBLE
+
+        } else {
+            binding.svOrders.visibility = View.GONE
+            binding.tvOrders.visibility = View.VISIBLE
+        }
     }
 
     companion object {
@@ -51,59 +114,6 @@ class CancelledFragment : Fragment(), OrderAdapter.OnItemClickListener {
                     putInt(USER_ID, userId)
                 }
             }
-    }
-    @SuppressLint("NotifyDataSetChanged")
-    private fun fetchData(userId: Int){
-        val orderApiService = RetrofitClient.getRetrofit().create(OrderApiService::class.java)
-        val orderApiUtil = OrderApiUtil(orderApiService)
-        val productApiService = RetrofitClient.getRetrofit().create(ProductApiService::class.java)
-        val productApiUtil = ProductApiUtil(productApiService)
-        lifecycleScope.launch {
-            try {
-                val ordersByUser = orderApiUtil.getOrdersByUser(userId)
-                var sortOrderByUser = ordersByUser.reversed()
-                var ordersCancelled : MutableList<Order> = mutableListOf()
-                for (item in sortOrderByUser) {
-                    if (item.status == 5) {
-                        ordersCancelled.add(item)
-                    }
-                }
-                var firstOrderProducts : MutableList<Product> = mutableListOf()
-                var listOrderItems: MutableList<List<OrderItem>> = mutableListOf()
-                var firstOrderProductDetails: MutableList<ProductDetail> = mutableListOf()
-                var firstImageProducts: MutableList<ProductImage> = mutableListOf()
-                for (item in ordersCancelled) {
-                    val orderItems = orderApiUtil.getOrderItems(item.id)
-                    val productDetail = productApiUtil.getDetail(orderItems!![0].productDetailId)
-                    val product = productApiUtil.get(productDetail!!.productId)
-                    val image = productApiUtil.getImages(productDetail.productId)
-                    listOrderItems.add(orderItems!!)
-                    firstOrderProducts.add(product!!)
-                    firstOrderProductDetails.add(productDetail!!)
-                    firstImageProducts.add(image!![0])
-                }
-                bindOrdersCancelledByUser(ordersCancelled, listOrderItems, firstOrderProducts,firstOrderProductDetails,firstImageProducts)
-            }catch (e: Exception) {
-                Log.d("CompletedfetchDataError", e.message.toString())
-            }
-        }
-    }
-    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
-    private fun bindOrdersCancelledByUser(orders: List<Order>, listOrderItems: List<List<OrderItem>>, firstOrderProducts: List<Product>, firstOrderProductDetails: List<ProductDetail>, firstImageProducts: List<ProductImage>){
-        if(orders.isNotEmpty() && firstOrderProducts.isNotEmpty()){
-            val orderAdapter= OrderAdapter(this@CancelledFragment, orders,listOrderItems, firstOrderProducts,firstOrderProductDetails,firstImageProducts, 5, this@CancelledFragment)
-            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rcOrders.setHasFixedSize(true)
-            binding.rcOrders.adapter= orderAdapter
-            binding.rcOrders.layoutManager= layoutManager
-            orderAdapter.notifyDataSetChanged()
-            binding.tvOrders.visibility = View.GONE
-        } else {
-            binding.svOrders.visibility = View.GONE
-        }
-    }
-
-    override fun onCancelClick(orderId: Int, isPaid: Boolean, isReviewed: Boolean) {
-        TODO("Not yet implemented")
+        const val TAG = "ToCancelledFragment"
     }
 }

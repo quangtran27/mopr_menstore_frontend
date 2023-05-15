@@ -6,24 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".activities.ReviewActivity">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:theme="@style/toolbar_primary">
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Đánh giá sản phẩm"
-            android:textSize="22sp"
-            android:textColor="@color/primary"
-            android:layout_gravity="center"/>
-    </androidx.appcompat.widget.Toolbar>
+    <include android:id="@+id/header" layout="@layout/common_header_with_back_title" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -33,181 +16,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolBar"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="0.0"
+        android:orientation="horizontal">
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcReviews"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/ivImagePro"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginLeft="12dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:src="@mipmap/ic_launcher" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginRight="12dp"
-                        android:layout_marginBottom="8dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvNameProduct"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Đây là nội dung dài cần bị giới hạn lại khi quá dài"
-                            android:textColor="@color/primary" />
-
-                        <TextView
-                            android:id="@+id/tvClassifyProduct"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Đây là nội dung dài cần bị giới hạn lại khi quá dài"
-                            android:textColor="@color/text_gray" />
-                    </LinearLayout>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="1sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@color/background_gray"
-                    android:orientation="vertical" />
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_margin="4dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
-                        android:layout_weight="0.2"
-                        android:text="Chất lượng sản phẩm"
-                        android:textColor="@color/primary"
-                        android:textStyle="bold"
-                        />
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:gravity="center">
-                        <RatingBar
-                            android:id="@+id/rantingBar"
-                            android:progressDrawable="@drawable/custom_ratingbar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:numStars="5"
-                            android:stepSize="1"
-                            android:rating="5" />
-                    </LinearLayout>
-                    <TextView
-                        android:id="@+id/tvReview"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.3"
-                        android:text="Tuyệt vời"
-                        android:textColor="@color/star"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:textSize="16dp" />
-                </LinearLayout>
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:id="@+id/llImageReview"
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_margin="8dp">
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rcImageReview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="70dp"
-                            android:layout_marginRight="4dp"/>
-                        <LinearLayout
-                            android:id="@+id/llAddImageBonus"
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
-                            android:background="@drawable/border_rounded_button"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:orientation="vertical">
-                            <ImageView
-                                android:id="@+id/imvAddImage"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_camera"/>
-                        </LinearLayout>
-
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/llAddImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="70dp"
-                        android:background="@drawable/border_rounded_button"
-                        android:layout_margin="8dp"
-                        android:layout_gravity="center"
-                        android:orientation="vertical">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_camera"
-                            android:layout_margin="8dp"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Thêm hình ảnh"
-                            android:textColor="@color/primary"
-                            android:gravity="center"
-                            android:layout_marginBottom="8dp"/>
-                    </LinearLayout>
-                </FrameLayout>
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/border_rounded_gray"
-                    android:layout_margin="8dp">
-                    <EditText
-                        android:id="@+id/edtDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="Hãy chia sẽ nhận xét cho sản phẩm này bạn nhé!"
-                        android:textColorHint="@color/text_gray"
-                        android:textSize="12dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginTop="4dp"
-                        android:inputType="textMultiLine"
-                        android:background="@android:color/transparent"
-                        android:textColor="@color/primary"
-                        android:paddingBottom="12dp"/>
-                </ScrollView>
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"/>
+        </ScrollView>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/llSendReviewButton"
@@ -228,8 +49,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:text="Gửi đánh giá"
-                android:textAllCaps="false"
-                android:textSize="20sp"
                 android:background="@color/primary"/>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

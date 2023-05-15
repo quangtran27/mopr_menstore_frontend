@@ -6,31 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".activities.OrdersActivity">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:theme="@style/toolbar_primary">
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Đơn mua"
-            android:textSize="22sp"
-            android:textColor="@color/primary"
-            android:layout_gravity="center"/>
-    </androidx.appcompat.widget.Toolbar>
+    <include android:id="@+id/header" layout="@layout/common_header_with_back_title" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         app:tabTextAppearance="@style/tab_layout_order"
         app:tabMode="scrollable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/toolBar"
+        app:layout_constraintTop_toBottomOf="@+id/header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:tabTextColor="@color/text_gray"

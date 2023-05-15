@@ -7,7 +7,6 @@ import com.mopr.menstore.models.Order
 import com.mopr.menstore.models.OrderItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
 
 class OrderApiUtil (private val orderApiService: OrderApiService) {
     suspend fun getOrdersByUser(userId: Int): List<Order>{
