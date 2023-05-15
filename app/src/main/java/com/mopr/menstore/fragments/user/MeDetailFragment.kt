@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.FragmentMeDetailBinding
@@ -29,6 +30,11 @@ class MeDetailFragment : Fragment() {
         binding = FragmentMeDetailBinding.inflate(layoutInflater)
         sharePrefManager = SharePrefManager.getInstance(requireContext())
         binding.header.tvTitle.text = "Thông tin cá nhân"
+        binding.header.ibBack.setOnClickListener{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.flMainFragmentContainer, MeFragment())
+                .commit()
+        }
     }
 
     override fun onCreateView(
@@ -43,15 +49,17 @@ class MeDetailFragment : Fragment() {
         lifecycleScope.launch {
             val user: User? = userApiUtil.getUserInfo(userSaved.id)
             if (user!=null){
-                if (user.image != null) {
+                if (user!!.image != null) {
                     Glide.with(requireContext()).load(Constants.BASE_URL1 + user.image).into(binding.ivAvatar)
+                }else{
+                    binding.ivAvatar.setBackgroundResource(R.drawable.avatar)
                 }
-                binding.tvId.text = user.id
                 binding.tvName.text = user.name
                 binding.tvEmail.text = user.email
                 binding.tvPhone.text = user.phone
                 binding.tvDate.text = user.birthday.split("-").reversed().joinToString("-")
                 binding.tvGender.text = user.gender
+                binding.tvAddress.text = user.address
             }
         }
         // Inflate the layout for this fragment

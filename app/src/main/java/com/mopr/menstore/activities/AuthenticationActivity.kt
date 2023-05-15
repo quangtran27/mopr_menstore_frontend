@@ -134,28 +134,40 @@ class AuthenticationActivity : AppCompatActivity() {
         val email = binding.emailSignup.text.toString()
 
         // Validate inputs
+        if(TextUtils.isEmpty(phone)){
+            binding.phoneSignup.error = "Vui lòng nhập thông tin!"
+            binding.phoneSignup.requestFocus()
+            return
+        }
         if (TextUtils.isEmpty(name)) {
             binding.nameSignup.error = "Vui lòng nhập thông tin!"
             binding.nameSignup.requestFocus()
+            return
         }
         if (TextUtils.isEmpty(email)) {
             binding.emailSignup.error = "Vui lòng nhập thông tin!"
             binding.emailSignup.requestFocus()
-        } else if (isGmailValid(email)) {
-            binding.emailSignup.error = "Email không đúng!"
-            binding.emailSignup.requestFocus()
-        } else if (TextUtils.isEmpty(phone)) {
-            binding.phoneSignup.error = "Vui lòng nhập thông tin!"
-            binding.phoneSignup.requestFocus()
-        } else if (!isPhoneNumberValid(phone)) {
-            binding.phoneSignup.error = "Số điện thoại không hợp lệ!"
-            binding.phoneSignup.requestFocus()
-        } else if (TextUtils.isEmpty(password)) {
+            return
+        }
+        if (TextUtils.isEmpty(password)) {
             binding.passwordSignup.error = "Vui lòng nhập thông tin!"
             binding.passwordSignup.requestFocus()
-        } else if (!isPasswordValid(password)) {
+            return
+        }
+        if (!isPhoneNumberValid(phone)) {
+            binding.phoneSignup.error = "Số điện thoại không hợp lệ!"
+            binding.phoneSignup.requestFocus()
+            return
+        }
+        if (!isPasswordValid(password)) {
             binding.passwordSignup.error = "Mật khẩu không đúng định dạng!"
             binding.passwordSignup.requestFocus()
+            return
+        }
+        if (!isGmailValid(email)) {
+            binding.emailSignup.error = "Email không đúng!"
+            binding.emailSignup.requestFocus()
+            return
         } else {
             //Initialize a UserApiService object from the Retrofit object
             val userSignupApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)

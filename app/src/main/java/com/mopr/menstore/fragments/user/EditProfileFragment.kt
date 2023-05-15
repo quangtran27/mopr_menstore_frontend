@@ -33,6 +33,11 @@ class EditProfileFragment : Fragment() {
         binding = FragmentEditProfileBinding.inflate(layoutInflater)
         sharePrefManager = SharePrefManager.getInstance(requireContext())
         binding.header.tvTitle.text = "Chỉnh sửa thông tin cá nhân"
+        binding.header.ibBack.setOnClickListener{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.flMainFragmentContainer, MeFragment())
+                .commit()
+        }
     }
 
     override fun onCreateView(
@@ -44,16 +49,9 @@ class EditProfileFragment : Fragment() {
         val userApiUtil = UserApiUtil(userApiService)
 
         lifecycleScope.launch {
-           val user: User? = userApiUtil.getUserInfo(userSaved.id)
-
-            //Display user
-            if (user!!.image != null) {
-                Glide.with(requireContext()).load(Constants.BASE_URL1 + user.image).into(binding.ivAvatar)
-            }
-            binding.tvUsername.text = user.name
-            binding.tvUserEmail.text = user.email
-            binding.tvUserAddress.text = user.address
-            binding.tvUserBirthday.text = user.birthday.split("-").reversed().joinToString("-")
+            val user: User? = userApiUtil.getUserInfo(userSaved.id)
+            //Display user on UI
+           displayUI(user!!)
 
             //Handle edit
             binding.ivAvatar.setOnClickListener {
@@ -113,7 +111,6 @@ class EditProfileFragment : Fragment() {
                         it,user.image.toString())
                     if(isSuccess){
                         Toast.makeText(requireContext(), "Đổi thành công!", Toast.LENGTH_SHORT).show()
-                        Navigation.findNavController(requireView()).navigate(EditProfileFragment())
                     }else{
                         Toast.makeText(requireContext(), "Thật bại!", Toast.LENGTH_SHORT).show()
                     }
@@ -194,5 +191,17 @@ class EditProfileFragment : Fragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.flMainFragmentContainer, fragment)
             .commit()
+    }
+private fun displayUI(user:User){
+            //Display user on UI
+            if (user.image != null) {
+                Glide.with(requireContext()).load(Constants.BASE_URL1 + user.image).into(binding.ivAvatar)
+            }else{
+                binding.ivAvatar.setBackgroundResource(R.drawable.avatar)
+            }
+            binding.tvUsername.text = user.name
+            binding.tvUserEmail.text = user.email
+            binding.tvUserAddress.text = user.address
+            binding.tvUserBirthday.text = user.birthday.split("-").reversed().joinToString("-")
     }
 }

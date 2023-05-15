@@ -55,7 +55,7 @@ class SharePrefManager private constructor(private val context: Context) {
 
 	//Check login
 	fun isLoggedIn(): Boolean {
-		val id = sharedPreferences.getString(KEY_ID, "-1")
+		val id = sharedPreferences.getString(KEY_ID, null)
 		return id != null
 	}
 }

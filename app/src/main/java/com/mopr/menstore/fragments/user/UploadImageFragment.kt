@@ -90,6 +90,12 @@ class UploadImageFragment : Fragment() {
         sharePrefManager = SharePrefManager.getInstance(requireContext())
         val userApiService = RetrofitClient.getRetrofit().create(UserApiService::class.java)
         binding.header.tvTitle.text = "Đổi ảnh đại diện"
+        binding.header.ibBack.setOnClickListener{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.flMainFragmentContainer, MeFragment())
+                .commit()
+        }
+
         val userApiUtil = UserApiUtil(userApiService)
 
         lifecycleScope.launch {

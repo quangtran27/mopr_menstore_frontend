@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.FragmentChangePasswordBinding
@@ -23,6 +24,12 @@ class ChangePasswordFragment : Fragment() {
         super.onCreate(savedInstanceState)
         binding = FragmentChangePasswordBinding.inflate(layoutInflater)
         sharePrefManager = SharePrefManager.getInstance(requireContext())
+        binding.header.tvTitle.text = "Đổi mật khẩu"
+        binding.header.ibBack.setOnClickListener{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.flMainFragmentContainer, MeFragment())
+                .commit()
+        }
     }
 
     override fun onCreateView(
