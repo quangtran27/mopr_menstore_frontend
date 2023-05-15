@@ -156,7 +156,7 @@ class ProductDetailActivity : AppCompatActivity() {
 					val user = userApiUtil.getUser(review.userId)
 					users.add(user!!)
 
-					val images = reviewApiUtil.getReviewImages(review.id)
+					val images = reviewApiUtil.getImages(review.id)
 					reviewImagesList.add(images)
 				}
 
