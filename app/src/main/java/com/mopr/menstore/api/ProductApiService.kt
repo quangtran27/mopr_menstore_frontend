@@ -2,6 +2,7 @@ package com.mopr.menstore.api
 
 import com.mopr.menstore.models.ListResponse
 import com.mopr.menstore.models.Product
+import com.mopr.menstore.models.Product2
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.models.Review
@@ -15,6 +16,11 @@ interface ProductApiService {
 	fun getAll(
 		@QueryMap options: Map<String, String>
 	): Call<ListResponse<Product>>
+
+	@GET("products/")
+	fun getAll2(
+		@QueryMap options: Map<String, String>
+	): Call<ListResponse<Product2>>
 
 	@GET("products/{productId}")
 	fun get(@Path(value = "productId", encoded = true) productId: Int): Call<Product>
