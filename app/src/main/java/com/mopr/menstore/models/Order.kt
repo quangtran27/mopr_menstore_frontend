@@ -2,7 +2,7 @@ package com.mopr.menstore.models
 
 data class Order(
 	val id: Int,
-	val user_IdId: Int,
+	val userId: Int,
 	val created: String, // yyyy-mm-dd
 	val updated: String, // yyyy-mm-dd
 	val status: Int, // 1: Chờ xác nhận, 2: Chờ lấy hàng, 3: Đang giao hàng, 4: Đã giao, 5: Đã hủy

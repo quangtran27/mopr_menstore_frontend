@@ -3,11 +3,9 @@ package com.mopr.menstore.adapters
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mopr.menstore.databinding.ItemOrderBinding
-import com.mopr.menstore.databinding.OrderBinding
 import com.mopr.menstore.models.OrderItem
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
@@ -36,7 +34,7 @@ class OrderItemAdapter(private val context: Context, private val orderItems: Lis
     }
     inner class OrderItemViewHolder(private val binding: ItemOrderBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(orderItem: OrderItem, product: Product, productDetail: ProductDetail, productImage: ProductImage){
-            Glide.with(context).load(Constants.BASE_URL1 + productImage.image).into(binding.ivImageItem)
+            Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image).into(binding.ivImageItem)
             binding.tvNameItem.text = product.name
             binding.tvClassifyItem.text = productDetail.color + ", " + productDetail.size
             binding.tvQuantityItem.text = "x${orderItem.quantity}"

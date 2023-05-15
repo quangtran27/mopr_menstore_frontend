@@ -4,13 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.mopr.menstore.adapters.CartItemAdapter
-import com.mopr.menstore.adapters.CartItemAdapter.OnItemClickedListener
 import com.mopr.menstore.api.CartApiService
 import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
@@ -25,8 +23,8 @@ import com.mopr.menstore.utils.ProductApiUtil
 import com.mopr.menstore.utils.UserApiUtil
 import kotlinx.coroutines.launch
 
-class CartActivity : AppCompatActivity() {
-    var cartItems : List<CartItem>  = mutableListOf()//lấy tất cả items của cart theo cartId
+class CartActivity : AppCompatActivity(),CartItemAdapter.OnItemClickedListener {
+    var cartItems : MutableList<CartItem>  = mutableListOf()//lấy tất cả items của cart theo cartId
     var products : MutableList<Product> = mutableListOf()
     var images : MutableList<ProductImage> = mutableListOf()
     var productDetailList : MutableList<ProductDetail> = mutableListOf()
@@ -34,6 +32,7 @@ class CartActivity : AppCompatActivity() {
     var checkedDetailList: MutableList<ProductDetail> = mutableListOf()
     var checkAll: Boolean = false //Chọn tất cả cartItem
     var userId: Int = 1 //userId lưu trong sharedPreference
+    var checkedStates: MutableList<Boolean> = mutableListOf<Boolean>()
     private var temptTotal: Int = 0 //Tạm tính
     private lateinit var jsonCartItems: String
     private lateinit var binding: ActivityCartBinding
@@ -48,10 +47,44 @@ class CartActivity : AppCompatActivity() {
         fetchData() //đổ data về các cartItesms vào
         funcheckBuy()
     }
+    //Nhấn để xóa ở vị trí bất kì
+    override fun onDeleteClick(position: Int) {
+        if (checkedCartItems.contains(cartItems[position]))
+            checkedCartItems.remove(cartItems[position])
+        if (checkedDetailList.contains(productDetailList[position]))
+            checkedDetailList.remove(productDetailList[position])
+        cartItems.removeAt(position)
+        productDetailList.removeAt(position)
+        products.removeAt(position)
+        images.removeAt(position)
+        if (cartItems.size == 0) {
+            Toast.makeText(
+                this@CartActivity,
+                "Không có món hàng nào trong giỏ hàng!!",
+                Toast.LENGTH_SHORT
+            ).show()
+            binding.cbCartItemAll.isChecked = false
+        }
+        fetchData()
+    }
+
+    override fun chooseAllItemsClick(checkedStates: MutableList<Boolean>) {
+        bindCartItems()
+    }
+
+    override fun tamtinh(
+        checkedCartItems: MutableList<CartItem>,
+        checkedDetailList: MutableList<ProductDetail>
+    ) {
+        TODO("Not yet implemented")
+    }
+
     //Xử lý để đổ dữ liệu về các cartItems lên trang giỏ hàng
     private fun fetchData(){
         if(checkedCartItems.isNullOrEmpty())
             checkedCartItems.clear()
+        if (checkedStates.isNullOrEmpty())
+            checkedStates.clear()
        lifecycleScope.launch {
            val productApiService = RetrofitClient.getRetrofit().create(ProductApiService::class.java)
            val productApiUtil = ProductApiUtil(productApiService)
@@ -60,7 +93,7 @@ class CartActivity : AppCompatActivity() {
            val userApiService = RetrofitClient.getRetrofit().create(UserApiService::class.java)
            val userApiUtil = UserApiUtil(userApiService)
            var cart = userApiUtil.getCart(this@CartActivity.userId)
-           cartItems = cartApiUtil.getAllCartItem(cart!!.id)
+           cartItems = cartApiUtil.getAllCartItem(cart!!.id) as MutableList<CartItem>
            Log.d("ChauAnh",cartItems.toString())
             //lấy tất cả items của cart theo cartId
            for (item in cartItems)
@@ -75,6 +108,7 @@ class CartActivity : AppCompatActivity() {
                val image = productApiUtil.getImages(product.id)
                //Lấy ảnh đầu tiên của list ảnh sản phẩm để thêm vào list ảnh của của các sản phẩm
                images.add(image[0]!!)
+               checkedStates.add(false)
            }
            if(cartItems.isEmpty()){
                Log.d("Error","No items in cart")
@@ -89,53 +123,27 @@ class CartActivity : AppCompatActivity() {
     //gắn dữ liệu vào recyclerView
     @SuppressLint("NotifyDataSetChanged")
     private fun bindCartItems() {
-        checkAll = binding.cbCartItemAll.isChecked
-        if (cartItems.isNotEmpty()) {
-            checkAll = binding.cbCartItemAll.isChecked
-            val cartItemAdapter = CartItemAdapter(this@CartActivity,cartItems,productDetailList, products,images,checkedCartItems,checkedDetailList, temptTotal, binding.tvTemptTotal, binding.cbCartItemAll,binding.ivCartItemDelete)
-            binding.rvCartItems.setHasFixedSize(true)
-            binding.rvCartItems.adapter = cartItemAdapter
-            binding.rvCartItems.layoutManager = LinearLayoutManager(baseContext, LinearLayoutManager.VERTICAL, false)
-            cartItemAdapter.setOnItemClickedListener(object : OnItemClickedListener {
-                override fun onItemClick(position: Int) {
-                    Log.d("ChauAnh",position.toString())
-                    cartItems.toMutableList().removeAt(position)
-                    cartItemAdapter.notifyItemRemoved(position)
-                }
-            })
-            cartItemAdapter.notifyDataSetChanged()
-        } else {
-            Log.d("ChauAnh","Không có món hàng nào trong giỏ hàng")
-        }
-    }
-    private fun checkDelete(){
-        binding.ivCartItemDelete.setOnClickListener{
-            val deleteDialog = AlertDialog.Builder(this)
-            if(cartItems.isNotEmpty() and binding.cbCartItemAll.isChecked){
-                deleteDialog.setMessage("Bạn có chắc muốn xóa các món hàng này?")
-                    .setPositiveButton("Xóa") { dialog, which ->
-                        if(binding.cbCartItemAll.isChecked and cartItems.isNotEmpty()){
-                            cartItems.toMutableList().clear()
-                        }
-                    }
-                    .setNegativeButton("Không") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .show()
-            }
-            if(checkedCartItems.isNotEmpty()){
-                deleteDialog.setMessage("Bạn có chắc muốn xóa các món hàng này?")
-                    .setPositiveButton("Xóa") { dialog, which ->
-                        if(binding.cbCartItemAll.isChecked and cartItems.isNotEmpty()){
-                            checkedCartItems.toMutableList().clear()
-                        }
-                    }
-                    .setNegativeButton("Không") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .show()
-            }
-        }
+        val cartItemAdapter = CartItemAdapter(
+            this@CartActivity,
+            cartItems,
+            productDetailList,
+            products,
+            images,
+            checkedCartItems,
+            checkedDetailList,
+            temptTotal,
+            binding.tvTemptTotal,
+            binding.cbCartItemAll,
+            binding.ivCartItemDelete,
+            this@CartActivity,
+            this@CartActivity,
+            checkedStates
+        )
+        binding.rvCartItems.setHasFixedSize(true)
+        binding.rvCartItems.adapter = cartItemAdapter
+        binding.rvCartItems.layoutManager =
+            LinearLayoutManager(baseContext, LinearLayoutManager.VERTICAL, false)
+        cartItemAdapter.notifyDataSetChanged()
     }
     private fun funcheckBuy(){
         binding.btnCartItemBuy.setOnClickListener{ //Khi người dùng nhấn vào nút mua hàng -> tới trang thanh toán
@@ -152,7 +160,7 @@ class CartActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             else
-                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_LONG)
+                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_LONG).show()
         }
     }
 }

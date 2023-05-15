@@ -214,7 +214,7 @@ class ReviewActivity : AppCompatActivity(), ReviewImageUploadAdapter.OnItemClick
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun loadDataReview(firstProduct: Product, firstProductDetail: ProductDetail, firstProductImages: List<ProductImage>){
-        Glide.with(this@ReviewActivity).load(Constants.BASE_URL1 + firstProductImages[0].image).into(binding.ivImagePro)
+        Glide.with(this@ReviewActivity).load(Constants.BASE_IMAGE_URL + firstProductImages[0].image).into(binding.ivImagePro)
         binding.tvNameProduct.text = firstProduct.name
         binding.tvClassifyProduct.text = firstProductDetail.size + ", " + firstProductDetail.color
     }

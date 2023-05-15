@@ -36,9 +36,5 @@
         <item name="android:background">@color/background_gray</item>
         <item name="android:textColor">@color/text_gray</item>
     </style>
-    <!-- ToolBar -->
-    <style name="toolbar_primary" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
-        <item name="colorOnPrimary">@color/primary</item>
-    </style>
 
 </resources>

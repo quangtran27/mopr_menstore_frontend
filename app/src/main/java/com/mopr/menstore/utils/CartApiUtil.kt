@@ -75,5 +75,18 @@ class CartApiUtil(private val cartApiService: CartApiService) {
 			return@withContext listOf()
 		}
 	}
+	suspend fun updateCartItem(cartId: Int, cartItemId: Int, quantity: Int){
+		return withContext(Dispatchers.IO){
+			try {
+				val response = cartApiService.deleteCartItem(cartId, cartItemId, quantity).execute()
+				if(!response.isSuccessful){
+					throw ApiException("Error update cart. Status code: ${response.code()}")
+				}
+			}
+			catch (e: Exception){
+				Log.d("updateCartError", e.message.toString())
+			}
+		}
+	}
 
 }

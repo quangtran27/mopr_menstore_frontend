@@ -2,6 +2,7 @@ package com.mopr.menstore.api
 
 import com.mopr.menstore.models.Cart
 import com.mopr.menstore.models.CartItem
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -20,5 +21,9 @@ interface CartApiService {
 		@Field("quantity") quantity: Int
 	): Call<CartItem>
 
-
+	@POST("carts/{cartId}/items/{cartItemId}")
+	fun deleteCartItem(
+		@Path("cartId", encoded = true) cartId: Int,
+		@Path("cartItemId", encoded = true) cartItemId: Int,
+		@Field("quantity") quantity: Int): Call<RequestBody>
 }
