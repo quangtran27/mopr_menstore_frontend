@@ -5,26 +5,31 @@
     android:layout_height="match_parent"
     tools:context=".fragments.orders.CancelledFragment"
     android:background="@color/background_gray">
-    <FrameLayout
-        android:id="@+id/flOrders"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ScrollView
-            android:id="@+id/svOrders"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:id="@+id/flOrders"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcOrders"
+            <ScrollView
+                android:id="@+id/svOrders"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </ScrollView>
-        <TextView
-            android:id="@+id/tvOrders"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Chưa có đơn hàng"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/text_gray"/>
-    </FrameLayout>
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcOrders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </ScrollView>
+            <TextView
+                android:id="@+id/tvOrders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Chưa có đơn hàng"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/text_gray"/>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

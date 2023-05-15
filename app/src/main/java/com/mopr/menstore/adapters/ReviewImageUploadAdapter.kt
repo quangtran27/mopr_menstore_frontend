@@ -2,26 +2,24 @@ package com.mopr.menstore.adapters
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mopr.menstore.databinding.ItemReviewUploadImageBinding
-import com.mopr.menstore.utils.Constants
 
 class ReviewImageUploadAdapter(
     private val context: Context,
     private val reviewImages: MutableList<Uri>,
-    private val listener: OnItemClickListener?
-): RecyclerView.Adapter<ReviewImageUploadAdapter.ReviewImageViewHolder>() {
-    inner class ReviewImageViewHolder(private val binding: ItemReviewUploadImageBinding):
+
+    ) : RecyclerView.Adapter<ReviewImageUploadAdapter.ReviewImageViewHolder>() {
+    private var listener: OnItemClickListener? = null
+
+    inner class ReviewImageViewHolder(private val binding: ItemReviewUploadImageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(image: Uri, position: Int){
+        fun bind(image: Uri, position: Int) {
             Glide.with(context).load(image).into(binding.imvReview)
             binding.tvRemoveImage.setOnClickListener {
-                // Gọi phương thức onDeleteClick của interface
                 listener?.onDeleteClick(position)
             }
         }
@@ -44,7 +42,13 @@ class ReviewImageUploadAdapter(
         val image = reviewImages[position]
         holder.bind(image, position)
     }
-    interface OnItemClickListener  {
+
+    interface OnItemClickListener {
         fun onDeleteClick(position: Int)
     }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
+    }
+
 }
