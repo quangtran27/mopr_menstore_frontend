@@ -21,9 +21,8 @@ interface CartApiService {
 		@Field("quantity") quantity: Int
 	): Call<CartItem>
 
-	@POST("carts/{cartId}/items/{cartItemId}")
+	@DELETE("carts/{cartId}/items/{cartItemId}")
 	fun deleteCartItem(
 		@Path("cartId", encoded = true) cartId: Int,
-		@Path("cartItemId", encoded = true) cartItemId: Int,
-		@Field("quantity") quantity: Int): Call<RequestBody>
+		@Path("cartItemId", encoded = true) cartItemId: Int): Call<RequestBody>
 }

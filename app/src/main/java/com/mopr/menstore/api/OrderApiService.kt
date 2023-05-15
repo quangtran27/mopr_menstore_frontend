@@ -26,5 +26,17 @@ interface OrderApiService {
         @Part("is_reviewed") isReviewed: Int
         ): Call<RequestBody>
 
+    @Multipart
+    @POST("orders/")
+    fun addOrder(
+        @Part("user_id") user_id: Int,
+        @Part("name") name: String,
+        @Part("phone") phone: String,
+        @Part("address") address: String,
+        @Part("payment") payment: Int,
+        @Part("cart_item_ids") cart_item_ids: List<Int>,
+        @Part("note") note: String
+    ):Call<RequestBody>
+
 
 }

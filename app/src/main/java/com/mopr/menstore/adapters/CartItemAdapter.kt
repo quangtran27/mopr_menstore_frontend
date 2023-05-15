@@ -6,12 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.mopr.menstore.activities.CartActivity
 import com.mopr.menstore.databinding.CartItemBinding
 import com.mopr.menstore.models.CartItem
 import com.mopr.menstore.models.Product
@@ -31,9 +29,7 @@ open class CartItemAdapter(
     private var temptTotal: Int,
     private var tv_temptTotal: TextView,
     private var cb_cbCartItemAll: CheckBox,
-    private var ivCartItemDelete: ImageView,
     private val listener: OnItemClickedListener?,
-    private val checkBoxListener: CartActivity,
     private var checkedStates: MutableList<Boolean>
 ) : RecyclerView.Adapter<CartItemAdapter.CartItemViewHolder>() {
 
@@ -75,6 +71,7 @@ open class CartItemAdapter(
                     }
                     checkedCartItems = cartItems as MutableList<CartItem>
                     checkedDetailList = productDetailList as MutableList<ProductDetail>
+                    Log.d("CartActivity",checkedCartItems.toString())
                     tamtinh(checkedCartItems,checkedDetailList)
                 }
                 else{
@@ -83,7 +80,7 @@ open class CartItemAdapter(
                         checkedStates[i] = false
                     }
                 }
-                listener?.chooseAllItemsClick(checkedStates)
+                listener?.chooseAllItemsClick()
             }
             //Kiểm tra xem checkBox của các item có thay đổi trạng thái hay không
             binding.cbCartItem.setOnCheckedChangeListener { _, _ ->
@@ -167,7 +164,8 @@ open class CartItemAdapter(
             //Nhấn xóa một item ở vị trí cụ thể
             binding.ivDeleteCartItem.setOnClickListener(){
                 listener?.onDeleteClick(position)
-                tamtinh(cartItems as MutableList<CartItem>,productDetailList as MutableList<ProductDetail>)
+                tamtinh(checkedCartItems,checkedDetailList)
+                Log.d("ChauAnh",checkedCartItems.toString())
             }
         }
     }
@@ -185,8 +183,11 @@ open class CartItemAdapter(
         tv_temptTotal.text = temptTotal.toString() + "đ"
     }
     public interface OnItemClickedListener{
-        fun onDeleteClick(position: Int)
-        fun chooseAllItemsClick(checkedStates: MutableList<Boolean>)
+        fun onDeleteClick(
+            position: Int,
+        )
+        fun chooseAllItemsClick(
+        )
         fun tamtinh(checkedCartItems: MutableList<CartItem>, checkedDetailList: MutableList<ProductDetail>)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {

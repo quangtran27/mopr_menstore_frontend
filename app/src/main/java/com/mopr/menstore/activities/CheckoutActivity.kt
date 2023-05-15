@@ -2,18 +2,19 @@ package com.mopr.menstore.activities
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mopr.menstore.adapters.CheckOutItemAdapter
+import com.mopr.menstore.api.OrderApiService
 import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.ActivityCheckoutBinding
 import com.mopr.menstore.models.*
+import com.mopr.menstore.utils.OrderApiUtil
 import com.mopr.menstore.utils.ProductApiUtil
 import com.mopr.menstore.utils.UserApiUtil
 import kotlinx.coroutines.launch
@@ -21,11 +22,16 @@ import kotlinx.coroutines.launch
 class CheckoutActivity : AppCompatActivity() {
     private lateinit var binding : ActivityCheckoutBinding
     private var cartItemsChoosed: List<CartItem> = emptyList()
-    var products : MutableList<Product> = mutableListOf()
-    var images : MutableList<ProductImage> = mutableListOf()
-    var productDetailList : MutableList<ProductDetail> = mutableListOf()
-    var defaultShippingFee : Int = 10000
-    var userId: Int = 1 //Lấy từ sharedPrefercence
+    private var products : MutableList<Product> = mutableListOf()
+    private var cartItemIds: MutableList<Int> = mutableListOf()
+    private var images : MutableList<ProductImage> = mutableListOf()
+    private var productDetailList : MutableList<ProductDetail> = mutableListOf()
+    private var defaultShippingFee : Int = 10000
+    private var userId: Int = 1 //Lấy từ sharedPrefercence
+    private var totalPayment : Int = 0
+    private lateinit var productApiUtil: ProductApiUtil
+    private lateinit var userApiUtil: UserApiUtil
+    private lateinit var orderApiUtil: OrderApiUtil
     lateinit var user: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,47 +43,37 @@ class CheckoutActivity : AppCompatActivity() {
         val type = object : TypeToken<List<CartItem>>() {}.type
         val gson = Gson()
         cartItemsChoosed = gson.fromJson(jsonCartItems, type)
-        if (cartItemsChoosed.isEmpty()){
-            Toast.makeText(this@CheckoutActivity,"Không có item nào được chọn",Toast.LENGTH_LONG)
+        for (cartItem in cartItemsChoosed)
+            cartItemIds.add(cartItem.id)
+        fetchData()
+        binding.tvNameCheckout.text = cartItemsChoosed.size.toString()
+        binding.btnCartItemBuy.setOnClickListener{
+            lifecycleScope.launch {
+                orderApiUtil = OrderApiUtil(RetrofitClient.getRetrofit().create(OrderApiService::class.java))
+                //var order: Order = Order(user.id,user.name,user.phone,user.address.toString(),1,cartItemIds,note=)
+                orderApiUtil.addOrder(user.id,user.name,user.phone,user.address.toString(),1,cartItemIds,note="Không có")
+            }
         }
-        else{
-            fetchData()
-            binding.tvNameCheckout.text = cartItemsChoosed.size.toString()
-        }
-    }
 
+    }
     private fun fetchData() {
         lifecycleScope.launch {
-            val productApiService = RetrofitClient.getRetrofit().create(ProductApiService::class.java)
-            val productApiUtil = ProductApiUtil(productApiService)
-            val userApiService = RetrofitClient.getRetrofit().create(UserApiService::class.java)
-            val userApiUtil = UserApiUtil(userApiService)
+            userApiUtil = UserApiUtil(RetrofitClient.getRetrofit().create(UserApiService::class.java))
             user = userApiUtil.getUser(userId)!!
-            for (item in cartItemsChoosed)
-            {
-                //lấy chi tiết của 1 sản phẩm theo productDetailId
+            for (item in cartItemsChoosed) {
+                productApiUtil= ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
                 val productDetail = productApiUtil.getProductDetail(item.productDetailId)
                 productDetailList.add(productDetail!!)
-                //lấy ra 1 sản phẩm theo productId
                 val product = productApiUtil.get(productDetail.productId)
                 products.add(product!!)
-                //Lấy list ảnh theo id một sản phẩm
                 val image = productApiUtil.getImages(product.id)
-                //Lấy ảnh đầu tiên của list ảnh sản phẩm để thêm vào list ảnh của của các sản phẩm
                 images.add(image[0]!!)
             }
-            if(cartItemsChoosed.isEmpty()){
-                Log.d("Error","No items in cart")
-            }
-            else
-            {
-                bindCheckOutItems(cartItemsChoosed,productDetailList, products,images)
-                Log.d("chauanh","bind successfully")
-            }
+            bindCheckOutItems(cartItemsChoosed,productDetailList, products,images)
+            Log.d("chauanh","bind successfully")
         }
     }
     private  fun totalPayment (cartItemsChoosed: List<CartItem>,productDetailList : MutableList<ProductDetail>): Int {
-        var totalPayment : Int = 0
         var i = 0;
         for (item in cartItemsChoosed){
             if(productDetailList[i].onSale){

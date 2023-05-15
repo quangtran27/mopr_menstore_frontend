@@ -54,7 +54,7 @@ class OrderAdapter(
             productDetail: ProductDetail,
             productImage: ProductImage
         ) {
-            Glide.with(context).load(Constants.BASE_URL1 + productImage.image)
+            Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image)
                 .into(binding.ivImagePro)
 
             binding.tvNamePro.text = product.name

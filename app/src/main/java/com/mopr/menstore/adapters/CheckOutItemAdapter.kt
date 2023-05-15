@@ -40,14 +40,11 @@ class CheckOutItemAdapter(
                 .into(binding.ivCheckOutItem)
         }
     }
-    // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckOutItemViewHolder {
         val binding = CheckoutItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CheckOutItemViewHolder(binding)
     }
-    // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = cartItems.size
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: CheckOutItemViewHolder, position: Int) {
         holder.bind(cartItems[position],productDetailList[position],products[position],images[position])
     }
