@@ -85,6 +85,31 @@
                     android:layout_height="wrap_content"
                     android:weightSum="2"
                     android:orientation="horizontal"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:text="Phí vận chuyển"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvShipPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.3"
+                        android:text="90700đ"
+                        android:textColor="@color/primary"
+                        android:textAlignment="textEnd"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2"
+                    android:orientation="horizontal"
                     android:layout_margin="8dp">
                     <TextView
                         android:layout_width="0dp"

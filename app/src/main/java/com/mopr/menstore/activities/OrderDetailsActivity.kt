@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +19,7 @@ import com.mopr.menstore.models.OrderItem
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
+import com.mopr.menstore.utils.Formatter
 import com.mopr.menstore.utils.OrderApiUtil
 import com.mopr.menstore.utils.ProductApiUtil
 import kotlinx.coroutines.launch
@@ -84,13 +84,13 @@ class OrderDetailsActivity : AppCompatActivity() {
                 productImages.add(image[0])
             }
 
-            bindOrderItems(orderItems, products, productDetails, productImages, order!!.total)
+            bindOrderItems(orderItems, products, productDetails, productImages,order!!.shippingFee, order.total)
 
             binding.tvNameCustomer.text = order.name
             binding.tvPhoneCustomer.text = order.phone
             binding.tvAddressCustomer.text = order.address
 
-            when (order.status) {
+            when (status) {
                 1, 2 -> {
                     binding.btnReviewOrCancel.text = "Hủy"
                     binding.btnReviewOrCancel.isEnabled = true
@@ -102,6 +102,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                 4 -> {
                     binding.btnReviewOrCancel.text = "Đánh giá"
                     binding.btnReviewOrCancel.isEnabled = true
+                    binding.btnReviewOrCancel.isEnabled = !order.isReviewed
                 }
                 5 -> {
                     binding.btnReviewOrCancel.text = "Đánh giá"
@@ -109,7 +110,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                 }
             }
 
-            binding.btnReviewOrCancel.isEnabled = !order.isReviewed
+
         }
     }
 
@@ -119,6 +120,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         products: List<Product>,
         productDetails: List<ProductDetail>,
         firstProductImages: List<ProductImage>,
+        shippingFee: Int,
         total: Int
     ) {
         if (orderItems.isNotEmpty() && products.isNotEmpty()) {
@@ -135,7 +137,8 @@ class OrderDetailsActivity : AppCompatActivity() {
             binding.rcProducts.adapter = orderItemsAdapter
             binding.rcProducts.layoutManager = layoutManager
             orderItemsAdapter.notifyDataSetChanged()
-            binding.tvTotalPrice.text = total.toString()
+            binding.tvShipPrice.text = Formatter.formatVNDAmount(shippingFee.toLong())
+            binding.tvTotalPrice.text = Formatter.formatVNDAmount(total.toLong())
         }
     }
 

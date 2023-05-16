@@ -11,7 +11,7 @@ import com.mopr.menstore.activities.OrderDetailsActivity
 import com.mopr.menstore.activities.ReviewActivity
 import com.mopr.menstore.databinding.OrderBinding
 import com.mopr.menstore.models.*
-import com.mopr.menstore.utils.Constants
+import com.mopr.menstore.utils.Formatter
 
 class OrderAdapter(
     private val context: Fragment,
@@ -65,8 +65,8 @@ class OrderAdapter(
                 quantityItems += item.quantity
             }
             binding.tvQuantityItems.text = "$quantityItems sản phẩm"
-            binding.tvPricePro.text = orderItems[0].price.toString() + "đ"
-            binding.tvPriceTotal.text = order.total.toString() + "đ"
+            binding.tvPricePro.text = Formatter.formatVNDAmount(orderItems[0].price.toLong())
+            binding.tvPriceTotal.text = Formatter.formatVNDAmount(order.total.toLong())
             if (status == 1 || status == 2) {
                 binding.btnCancelOrReview.text = "Hủy"
                 binding.btnCancelOrReview.isEnabled = true

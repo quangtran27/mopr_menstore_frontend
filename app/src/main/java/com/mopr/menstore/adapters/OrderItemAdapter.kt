@@ -12,6 +12,7 @@ import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.utils.Constants
+import com.mopr.menstore.utils.Formatter
 
 class OrderItemAdapter(
     private val context: Context,
@@ -54,7 +55,7 @@ class OrderItemAdapter(
             binding.tvNameItem.text = product.name
             binding.tvClassifyItem.text = productDetail.color + ", " + productDetail.size
             binding.tvQuantityItem.text = "x${orderItem.quantity}"
-            binding.tvPriceItem.text = orderItem.price.toString()
+            binding.tvPriceItem.text = Formatter.formatVNDAmount(orderItem.price.toLong())
         }
     }
 }
