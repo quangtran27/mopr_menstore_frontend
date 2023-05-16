@@ -1,12 +1,18 @@
 package com.mopr.menstore.activities
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.mopr.menstore.R
 import com.mopr.menstore.adapters.CheckOutItemAdapter
 import com.mopr.menstore.api.OrderApiService
 import com.mopr.menstore.api.ProductApiService
@@ -19,8 +25,9 @@ import com.mopr.menstore.utils.ProductApiUtil
 import com.mopr.menstore.utils.UserApiUtil
 import kotlinx.coroutines.launch
 
+
 class CheckoutActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityCheckoutBinding
+    private lateinit var binding :  ActivityCheckoutBinding
     private var cartItemsChoosed: List<CartItem> = emptyList()
     private var products : MutableList<Product> = mutableListOf()
     private var cartItemIds: MutableList<Int> = mutableListOf()
@@ -32,7 +39,12 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var productApiUtil: ProductApiUtil
     private lateinit var userApiUtil: UserApiUtil
     private lateinit var orderApiUtil: OrderApiUtil
-    lateinit var user: User
+    private lateinit var user: User
+    private var phone: String = ""
+    private var address: String= ""
+    private var note: String= ""
+    private var name: String= ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckoutBinding.inflate(layoutInflater)
@@ -46,15 +58,66 @@ class CheckoutActivity : AppCompatActivity() {
         for (cartItem in cartItemsChoosed)
             cartItemIds.add(cartItem.id)
         fetchData()
-        binding.tvNameCheckout.text = cartItemsChoosed.size.toString()
+        binding.tvEditInfo.setOnClickListener(){
+
+            displayEditDialog()
+        }
         binding.btnCartItemBuy.setOnClickListener{
             lifecycleScope.launch {
                 orderApiUtil = OrderApiUtil(RetrofitClient.getRetrofit().create(OrderApiService::class.java))
-                //var order: Order = Order(user.id,user.name,user.phone,user.address.toString(),1,cartItemIds,note=)
-                orderApiUtil.addOrder(user.id,user.name,user.phone,user.address.toString(),1,cartItemIds,note="Không có")
+                orderApiUtil.addOrder(user.id,name,phone,address,1,cartItemIds,note)
+                Toast.makeText(this@CheckoutActivity,"Đặt hàng thành công!", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun displayEditDialog()
+    {
+        var editDialog = Dialog(this)
+        editDialog.setContentView(R.layout.edit_info_dialog)
+        var cancelBtn = editDialog.findViewById(R.id.btn_cancle) as Button
+        val saveBtn = editDialog.findViewById(R.id.btn_save) as Button
+        var ed_EditPhone: TextView = editDialog.findViewById(R.id.etPhone)
+        var ed_Name: TextView = editDialog.findViewById(R.id.etName)
+        var ed_EditAddress: TextView = editDialog.findViewById(R.id.etAddress)
+        var ed_EditNote: TextView =  editDialog.findViewById(R.id.etNote)
+        editDialog.setTitle("Chỉnh sửa thông tin nhận hàng")
+        val lp: WindowManager.LayoutParams = editDialog.getWindow()!!.getAttributes()
+        lp.width = 1000
+        lp.height = 1100
+        editDialog.getWindow()?.setAttributes(lp)
+        editDialog.setCancelable(false)
+        if(user.phone.isNotEmpty())
+            ed_EditPhone.text = user.phone.toString()
 
+        if(user.address!!.isNotEmpty()){
+            ed_EditAddress.text = user.address.toString()
+        }
+        if(user.name.isNotEmpty()){
+            ed_Name.text =  user.name
+        }
+        saveBtn.setOnClickListener {
+            lifecycleScope.launch {
+                //Hiển thị xác nhận lưu rồi tắt dialog
+                name = ed_Name.text.toString()
+                phone = ed_EditPhone.text.toString()
+                address = ed_EditAddress.text.toString()
+                note = ed_EditNote.text.toString()
+                if(phone.isNotEmpty() and address.isNotEmpty() and note.isNotEmpty()){
+                    binding.tvNameCheckout.text = name
+                    binding.tvPhoneCheckout.text = phone
+                    binding.tvAddressCheckout.text = address
+                    binding.tvNoteCheckout.text = note
+                    editDialog.dismiss()
+                }
+
+                else
+                    Toast.makeText(this@CheckoutActivity, "Vui lòng điền đủ các thông tin",Toast.LENGTH_LONG).show()
+            }
+        }
+        cancelBtn.setOnClickListener{
+            editDialog.dismiss()
+        }
+        editDialog.show()
     }
     private fun fetchData() {
         lifecycleScope.launch {
@@ -87,7 +150,6 @@ class CheckoutActivity : AppCompatActivity() {
         Log.d("ChauAnh",totalPayment.toString())
         return totalPayment
     }
-
     private fun bindCheckOutItems(cartItemsChoosed: List<CartItem>, productDetailList: MutableList<ProductDetail>, products: MutableList<Product>, images: MutableList<ProductImage>) {
         if (cartItemsChoosed.isNotEmpty()) {
             val checkOutItemsAdapter = CheckOutItemAdapter(this@CheckoutActivity,cartItemsChoosed,productDetailList, products,images)

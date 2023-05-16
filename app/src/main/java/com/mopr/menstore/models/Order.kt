@@ -7,12 +7,12 @@ data class Order(
 	val updated: String, // yyyy-mm-dd
 	val status: Int, // 1: Chờ xác nhận, 2: Chờ lấy hàng, 3: Đang giao hàng, 4: Đã giao, 5: Đã hủy
 	val name: String,
-	val phone: String,
-	val address: String,
-	val payment: Int, // 1: COD, 2: Chuyển khoản ngân hàng, 3: Khác
+	var phone: String,
+	var address: String,
+	var payment: Int, // 1: COD, 2: Chuyển khoản ngân hàng, 3: Khác
 	val isPaid: Boolean,
 	val isReviewed: Boolean,
-	val note: String,
+	var note: String,
 	val total: Int,
 //	val orderItems: List<OrderItem>,
 )
