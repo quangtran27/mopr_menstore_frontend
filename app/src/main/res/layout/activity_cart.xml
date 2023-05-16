@@ -31,7 +31,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="60dp"
         android:background="@color/white"
         android:orientation="horizontal"
         android:padding="0dp">
@@ -41,7 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Tất cả"
-            android:textColor="@color/primary" />
+            android:textColor="@color/primary"
+            app:buttonTint="@color/text_gray" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -54,10 +55,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Tổng thanh toán: "
+                android:layout_marginTop="4dp"
+                android:text="Tổng tính: "
                 android:textColor="@color/primary"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -68,28 +70,21 @@
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.337"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.644" />
+                android:layout_marginBottom="4dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
+        <Button
+            android:id="@+id/btnCheckout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            app:cardCornerRadius="4dp">
-
-            <Button
-                android:id="@+id/btnCheckout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/text_primary"
-                android:paddingHorizontal="34dp"
-                android:text="Mua hàng"
-                android:textColor="@color/white" />
-        </androidx.cardview.widget.CardView>
+            android:background="@color/text_primary"
+            android:paddingHorizontal="50dp"
+            android:gravity="center"
+            android:text="Mua hàng"
+            android:textColor="@color/white" />
     </LinearLayout>
 
 </LinearLayout>

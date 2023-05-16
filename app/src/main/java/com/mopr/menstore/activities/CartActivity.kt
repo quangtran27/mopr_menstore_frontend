@@ -86,8 +86,6 @@ class CartActivity : AppCompatActivity() {
             {
                 Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_LONG).show()
             }
-
-
         }
 
         cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))

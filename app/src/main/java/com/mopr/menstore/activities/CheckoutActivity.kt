@@ -21,7 +21,6 @@ import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.ActivityCheckoutBinding
-import com.mopr.menstore.fragments.main.HomeFragment
 import com.mopr.menstore.models.*
 import com.mopr.menstore.utils.OrderApiUtil
 import com.mopr.menstore.utils.ProductApiUtil
@@ -52,18 +51,10 @@ class CheckoutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //supportActionBar!!.setDisplayHomeAsUpEnabled(true)//cho phép hiển thị nút mũi tên để quay trở về trang Home
-        //supportActionBar!!.setDisplayShowTitleEnabled(false) //ẩn đi title của activity
         var jsonSelectedCartItems = intent.getStringExtra("jsonSelectedCartItems")
-//        var jsonProducts = intent.getStringExtra("jsonProducts")
-//        var jsonProductDetails = intent.getStringExtra("jsonProductDetails")
-//        var jsonProductImagesList = intent.getStringExtra("jsonProductImagesList")
         val type = object : TypeToken<List<CartItem>>() {}.type
         val gson = Gson()
         cartItemsChoosed = gson.fromJson(jsonSelectedCartItems, type)
-        //productDetailList = gson.fromJson(jsonProductDetails, type)
-        //products = gson.fromJson(jsonProducts,type)
-        //images = gson.fromJson(jsonProductImagesList,type)
         for (cartItem in cartItemsChoosed)
             cartItemIds.add(cartItem.id)
         fetchData()
@@ -109,7 +100,8 @@ class CheckoutActivity : AppCompatActivity() {
         notifyDialog.setCancelable(false)
         continueShopping.setOnClickListener {
             //tới trang home
-            loadFragment(HomeFragment.newInstance())
+            val intent = Intent(this@CheckoutActivity,MainActivity::class.java)
+            startActivity(intent)
         }
         manageOrder.setOnClickListener {
             //tới trang quản lý đơn hàng
@@ -151,10 +143,10 @@ class CheckoutActivity : AppCompatActivity() {
                 address = ed_EditAddress.text.toString()
                 note = ed_EditNote.text.toString()
                 if(phone.isNotEmpty() and address.isNotEmpty()){
-                    binding.tvNameCheckout.text = name
-                    binding.tvPhoneCheckout.text = phone
-                    binding.tvAddressCheckout.text = address
-                    binding.tvNoteCheckout.text = note
+                    binding.tvNameCheckout.text = "Tên: " + name
+                    binding.tvPhoneCheckout.text = "Số ĐT: " + phone
+                    binding.tvAddressCheckout.text = "Địa chỉ: "  + address
+                    binding.tvNoteCheckout.text = "Ghi chú: " + note
                     editDialog.dismiss()
                 }
 
@@ -218,7 +210,7 @@ class CheckoutActivity : AppCompatActivity() {
             binding.tvTotalPayment.text = (totalPayment + defaultShippingFee).toString() + "đ"
             if (user != null) {
                 Log.d("ChauAnh",user.phone.toString())
-                binding.tvNameCheckout.text = "Tên:" + user.name.toString()
+                binding.tvNameCheckout.text = "Tên: " + user.name.toString()
                 binding.tvPhoneCheckout.text = "Số ĐT: "+ user.phone
                 binding.tvAddressCheckout.text = "Địa chỉ: " + user.address
                 binding.tvNoteCheckout.text = "Ghi chú: " + note
