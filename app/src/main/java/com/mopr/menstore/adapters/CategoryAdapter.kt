@@ -2,6 +2,7 @@ package com.mopr.menstore.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Typeface
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -37,7 +38,8 @@ class CategoryAdapter(
 			}
 
 			if (category.id == activeId) {
-				binding.main.setBackgroundColor(ContextCompat.getColor(context, R.color.background_gray))
+				binding.tvCategoryName.setTypeface(null, Typeface.BOLD)
+				binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
 				binding.root.setOnClickListener(null)
 				binding.root.scrollTo(adapterPosition, 0)
 			}

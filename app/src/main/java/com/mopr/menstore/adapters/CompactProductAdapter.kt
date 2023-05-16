@@ -16,10 +16,17 @@ import com.mopr.menstore.utils.Formatter
 
 class CompactProductAdapter(
 	private val context: Context,
-	private val products: List<Product>,
-	private val productDetailsList: List<List<ProductDetail>>,
-	private val productImagesList: List<List<ProductImage?>>
+	private var products: List<Product>,
+	private var productDetailsList: List<List<ProductDetail>>,
+	private var productImagesList: List<List<ProductImage?>>
 ): RecyclerView.Adapter<CompactProductAdapter.CompactProductViewHolder>() {
+	fun updateData(products: List<Product>, productDetailsList: List<List<ProductDetail>>, productImagesList: List<List<ProductImage?>>) {
+		this.products = products
+		this.productDetailsList = productDetailsList
+		this.productImagesList = productImagesList
+	}
+
+
 	inner class CompactProductViewHolder(private val binding: ItemCompactProductBinding) : RecyclerView.ViewHolder(binding.root) {
 		fun bind(product: Product, productDetails: List<ProductDetail>, productImages: List<ProductImage?>) {
 			// Get min detail

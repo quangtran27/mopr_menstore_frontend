@@ -50,6 +50,9 @@
             android:exported="false" />
         <activity
             android:name=".activities.OrdersActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".activities.OrderDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ProductActivity"
@@ -77,5 +80,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

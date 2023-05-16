@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.mopr.menstore.R
 import com.mopr.menstore.activities.ChangePasswordActivity
 import com.mopr.menstore.activities.EditProfileActivity
 import com.mopr.menstore.activities.MeDetailActivity

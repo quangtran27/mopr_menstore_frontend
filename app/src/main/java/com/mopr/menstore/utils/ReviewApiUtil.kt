@@ -3,10 +3,8 @@ package com.mopr.menstore.utils
 import android.util.Log
 import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.ReviewApiService
-import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.models.Review
 import com.mopr.menstore.models.ReviewImage
-import okhttp3.Dispatcher
 import java.lang.Exception
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +32,7 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 		}
 	}
 
-	suspend fun getReviewImages(reviewId: Int): List<ReviewImage> {
+	suspend fun getImages(reviewId: Int): List<ReviewImage> {
 		return withContext(Dispatchers.IO) {
 			try {
 				val response = reviewApiService.getReviewImages(reviewId).execute()
@@ -59,7 +57,7 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 		const val TAG = "ReviewApiUtil"
 	}
 
-	suspend fun addReview(
+	suspend fun add(
 		userId: RequestBody,
 		productId: RequestBody,
 		star: RequestBody,
@@ -69,7 +67,7 @@ class ReviewApiUtil(private val reviewApiService: ReviewApiService) {
 		return withContext(Dispatchers.IO) {
 			try {
 				val response =
-					reviewApiService.addReview(userId, productId, star, description, images)
+					reviewApiService.add(userId, productId, star, description, images)
 						.execute()
 
 				if (response.isSuccessful) {
