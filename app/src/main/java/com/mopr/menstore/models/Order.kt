@@ -9,7 +9,8 @@ data class Order(
 	val name: String,
 	val phone: String,
 	val address: String,
-	val payment: Int, // 1: COD, 2: Chuyển khoản ngân hàng, 3: Khác
+	val payment: Int,
+	val shippingFee: Int, // 1: COD, 2: Chuyển khoản ngân hàng, 3: Khác
 	val isPaid: Boolean,
 	val isReviewed: Boolean,
 	val note: String,
