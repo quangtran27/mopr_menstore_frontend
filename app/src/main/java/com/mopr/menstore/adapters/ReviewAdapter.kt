@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.mopr.menstore.databinding.ItemReviewBinding
 import com.mopr.menstore.models.Review
 import com.mopr.menstore.models.ReviewImage
 import com.mopr.menstore.models.User
+import com.mopr.menstore.utils.Constants
 
 class ReviewAdapter(
 	val context: Context,
@@ -41,6 +43,7 @@ class ReviewAdapter(
 			binding.tvUserName.text = user.name
 			binding.tvReviewBody.text = review.desc
 			binding.rbRate.rating = review.star.toFloat()
+			Glide.with(context).load(Constants.BASE_URL1 + user.image).into(binding.ivUserImage)
 
 			val reviewImageAdapter = ReviewImageAdapter(context, images)
 			binding.rvReviewImages.adapter = reviewImageAdapter

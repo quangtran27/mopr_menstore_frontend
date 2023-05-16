@@ -40,8 +40,14 @@
             android:exported="false" />
         <activity
             android:name=".activities.WelcomeActivity"
+            android:exported="false" >
+        </activity>
+        <activity
+            android:name=".activities.WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.OrdersActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,7 +55,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.OrdersActivity"
+            android:name=".activities.OrderDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ProductActivity"

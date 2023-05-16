@@ -26,7 +26,7 @@ interface ReviewApiService {
     
     @Multipart
     @POST("reviews/")
-    fun addReview(
+    fun add(
         @Part("user_id") userId: RequestBody,
         @Part("product_id") productId: RequestBody,
         @Part("star") star: RequestBody,
