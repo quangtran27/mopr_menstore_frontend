@@ -5,10 +5,8 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.mopr.menstore.R
 import com.mopr.menstore.databinding.ActivityMainBinding
-import com.mopr.menstore.fragments.main.HomeFragment
-import com.mopr.menstore.fragments.main.MeFragment
-import com.mopr.menstore.fragments.main.NotificationFragment
-import com.mopr.menstore.fragments.main.ProductsFragment
+import com.mopr.menstore.fragments.main.*
+import com.mopr.menstore.fragments.user.MeFragment
 
 class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
@@ -29,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 					loadFragment(NotificationFragment.newInstance("", ""))
 				}
 				R.id.mePage -> {
-					loadFragment(MeFragment.newInstance("", ""))
+					loadFragment(MeFragment.newInstance("",""))
 				}
 			}
 			true
