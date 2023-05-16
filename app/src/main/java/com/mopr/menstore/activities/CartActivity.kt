@@ -77,9 +77,6 @@ class CartActivity : AppCompatActivity() {
                 val gson = Gson()
                 val intent = Intent(this, CheckoutActivity::class.java)
                 intent.putExtra("jsonSelectedCartItems", gson.toJson(selectedCartItems))
-//            intent.putExtra("jsonProducts", gson.toJson(products))
-//            intent.putExtra("jsonProductDetails", gson.toJson(productDetails))
-//            intent.putExtra("jsonProductImagesList", gson.toJson(productImagesList))
                 startActivity(intent)
             }
             else

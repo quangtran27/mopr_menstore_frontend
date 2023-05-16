@@ -81,7 +81,7 @@ class CheckoutActivity : AppCompatActivity() {
         OkBtn.setOnClickListener {
             lifecycleScope.launch {
                 orderApiUtil = OrderApiUtil(RetrofitClient.getRetrofit().create(OrderApiService::class.java))
-                orderApiUtil.addOrder(user.id, name, phone, address, 1, cartItemIds, note)
+                orderApiUtil.addOrder(user.id.toInt(), name, phone, address, 1, cartItemIds, note)
                 confirmDialog.dismiss()
                 displayAddOrderSuccessDialog()
             }

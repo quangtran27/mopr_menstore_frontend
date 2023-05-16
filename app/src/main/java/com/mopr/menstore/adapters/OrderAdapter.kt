@@ -11,6 +11,7 @@ import com.mopr.menstore.activities.OrderDetailsActivity
 import com.mopr.menstore.activities.ReviewActivity
 import com.mopr.menstore.databinding.OrderBinding
 import com.mopr.menstore.models.*
+import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.utils.Formatter
 
 class OrderAdapter(
@@ -56,7 +57,6 @@ class OrderAdapter(
         ) {
             Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image)
                 .into(binding.ivImagePro)
-
             binding.tvNamePro.text = product.name
             binding.tvClassifyPro.text = "${productDetail.color}, ${productDetail.size}"
             binding.tvQuantityPro.text = "x${orderItems[0].quantity}"

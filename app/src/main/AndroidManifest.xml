@@ -56,13 +56,6 @@
             android:name=".activities.OrdersActivity"
             android:exported="false"/>
         <activity
-            android:name=".activities.WelcomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.OrdersActivity"
-            android:exported="false">
-        </activity>
-        <activity
             android:name=".activities.ProductActivity"
             android:exported="false" />
         <activity

@@ -2,7 +2,6 @@ package com.mopr.menstore.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 data class User(
@@ -11,9 +10,8 @@ data class User(
 	val phone: String,
 	val password: String,
 	val birthday: String,
-	val address: String,
 	val gender: String,
 	val email: String?,
 	val image: String?, // Constants.BASE_URL + <object>.image
-	val address: String?
+	val address: String
 ) : Parcelable
