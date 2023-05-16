@@ -1,41 +1,45 @@
 package com.mopr.menstore.fragments.main
-
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.denzcoskun.imageslider.models.SlideModel
 import com.mopr.menstore.activities.CartActivity
 import com.mopr.menstore.activities.SearchActivity
-import com.mopr.menstore.adapters.CategoryAdapter
 import com.mopr.menstore.adapters.CompactProductAdapter
-import com.mopr.menstore.api.ApiException
-import com.mopr.menstore.api.CategoryApiService
+import com.mopr.menstore.api.BannerApiService
 import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.databinding.FragmentHomeBinding
-import com.mopr.menstore.models.Category
+import com.mopr.menstore.models.Banner
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
-import com.mopr.menstore.utils.CategoryApiUtil
+import com.mopr.menstore.utils.BannerApiUtil
+import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.utils.ProductApiUtil
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 	private lateinit var binding: FragmentHomeBinding
-	private var categories: List<Category> = emptyList()
 	private var topSaleProducts: List<Product> = emptyList()
 	private var latestProducts: List<Product> = emptyList()
 	private var topSaleProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
 	private var topSaleProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
 	private var latestProductDetailsList: MutableList<List<ProductDetail>> = mutableListOf()
 	private var latestProductImagesList: MutableList<List<ProductImage?>> = mutableListOf()
+	private var banners: List<Banner> = emptyList()
+
+	private lateinit var compactProductAdapterForLatest: CompactProductAdapter
+	private lateinit var compactProductAdapterTopSale: CompactProductAdapter
+
+	private lateinit var productApiUtil: ProductApiUtil
+	private lateinit var bannerApiUtil: BannerApiUtil
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = FragmentHomeBinding.inflate(layoutInflater)
@@ -44,93 +48,86 @@ class HomeFragment : Fragment() {
 		binding.header.etSearch.setOnClickListener {
 			startActivity(Intent(requireContext(), SearchActivity::class.java))
 		}
-
 		binding.header.ibCart.setOnClickListener {
-			activity?.let{
-				val intent = Intent (it, CartActivity::class.java)
-				it.startActivity(intent)
-			}
+			startActivity(Intent(requireContext(), CartActivity::class.java))
 		}
 
+		productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
+		bannerApiUtil = BannerApiUtil(RetrofitClient.getRetrofit().create(BannerApiService::class.java))
+
+		fetchData()
+	}
+
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = binding.root
+
+	private fun fetchData() {
 		lifecycleScope.launch {
-			fetchData()
-			bindData()
+			launch {
+				fetchTopSaleProducts()
+				bindTopSaleProducts(topSaleProducts, topSaleProductDetailsList, topSaleProductImagesList)
+			}
+			launch {
+				fetchLatestProducts()
+				bindLatestProducts(latestProducts, latestProductDetailsList, latestProductImagesList)
+			}
+			launch {
+				fetchBanners()
+			}
 		}
 	}
 
-	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-		return binding.root
-	}
+	private suspend fun fetchTopSaleProducts() {
+		binding.progressBar.visibility = View.VISIBLE
+		topSaleProducts = productApiUtil.getTopSale()
+		binding.progressBar.visibility = View.GONE
 
-	private suspend fun fetchData() {
-		val productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
-		val categoryApiUtil = CategoryApiUtil(RetrofitClient.getRetrofit().create(CategoryApiService::class.java))
-
-		try {
-			categories = categoryApiUtil.getAllCategories()
-			topSaleProducts = productApiUtil.getTopSale()
-			for (product in topSaleProducts) {
-				topSaleProductDetailsList.add(productApiUtil.getDetails(product.id))
-				topSaleProductImagesList.add(productApiUtil.getImages(product.id))
-			}
-			latestProducts = productApiUtil.getLatest()
-			for (product in latestProducts) {
-				latestProductDetailsList.add(productApiUtil.getDetails(product.id))
-				latestProductImagesList.add(productApiUtil.getImages(product.id))
-			}
-		} catch (e: ApiException) {
-			Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+		for (product in topSaleProducts) {
+			topSaleProductDetailsList.add(productApiUtil.getDetails(product.id))
+			topSaleProductImagesList.add(productApiUtil.getImages(product.id))
 		}
 	}
 
-	private fun bindData() {
-		bindCategories(categories)
-		bindTopSaleProducts(topSaleProducts, topSaleProductDetailsList, topSaleProductImagesList)
-		bindLatestProducts(latestProducts, latestProductDetailsList, latestProductImagesList)
+	private suspend fun fetchBanners() {
+		banners = bannerApiUtil.getAll()
+		val bannerSlides = ArrayList<SlideModel>()
+		for (banner in banners) {
+			bannerSlides.add(SlideModel(Constants.BASE_URL1 + banner.image))
+		}
+		binding.isBanners.setImageList(bannerSlides)
+	}
+
+	private suspend fun fetchLatestProducts() {
+		binding.progressBar2.visibility = View.VISIBLE
+		latestProducts = productApiUtil.getLatest()
+		binding.progressBar2.visibility = View.GONE
+
+		for (product in latestProducts) {
+			latestProductDetailsList.add(productApiUtil.getDetails(product.id))
+			latestProductImagesList.add(productApiUtil.getImages(product.id))
+		}
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	private fun bindTopSaleProducts(products: List<Product>, topSaleProductDetailsList: List<List<ProductDetail>>, topSaleProductImagesList: List<List<ProductImage?>>) {
-		if (products.isNotEmpty()) {
-			val compactProductAdapter = CompactProductAdapter(requireContext(), products, topSaleProductDetailsList, topSaleProductImagesList)
-			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+		compactProductAdapterTopSale = CompactProductAdapter(requireContext(), products, topSaleProductDetailsList, topSaleProductImagesList)
+		val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-			binding.rvTopSaleProducts.setHasFixedSize(true)
-			binding.rvTopSaleProducts.layoutManager = layoutManager
-			binding.rvTopSaleProducts.adapter = compactProductAdapter
-
-			compactProductAdapter.notifyDataSetChanged()
-		}
+		binding.rvTopSaleProducts.setHasFixedSize(true)
+		binding.rvTopSaleProducts.layoutManager = layoutManager
+		binding.rvTopSaleProducts.adapter = compactProductAdapterTopSale
+		compactProductAdapterTopSale.notifyDataSetChanged()
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	private fun bindLatestProducts(products: List<Product>, latestProductDetailsList: List<List<ProductDetail>>, latestProductImagesList: List<List<ProductImage?>>) {
-		if (products.isNotEmpty()) {
-			val compactProductAdapter = CompactProductAdapter(requireContext(), products, latestProductDetailsList, latestProductImagesList)
-			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+		compactProductAdapterForLatest = CompactProductAdapter(requireContext(), products, latestProductDetailsList, latestProductImagesList)
+		val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-			binding.rvLatestProduct.setHasFixedSize(true)
-			binding.rvLatestProduct.layoutManager = layoutManager
-			binding.rvLatestProduct.adapter = compactProductAdapter
-
-			compactProductAdapter.notifyDataSetChanged()
-		}
+		binding.rvLatestProduct.setHasFixedSize(true)
+		binding.rvLatestProduct.layoutManager = layoutManager
+		binding.rvLatestProduct.adapter = compactProductAdapterForLatest
+		compactProductAdapterForLatest.notifyDataSetChanged()
 	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	private fun bindCategories(categories: List<Category>) {
-		if (categories.isNotEmpty()) {
-			val categoryAdapter = CategoryAdapter(requireContext(), categories)
-			val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-			binding.rvCategories.setHasFixedSize(true)
-			binding.rvCategories.layoutManager = layoutManager
-			binding.rvCategories.adapter = categoryAdapter
-
-			categoryAdapter.notifyDataSetChanged()
-		}
-	}
-
 	companion object {
 		/**
 		 * @return A new instance of fragment HomeFragment.
@@ -142,7 +139,6 @@ class HomeFragment : Fragment() {
 				arguments = Bundle().apply {
 				}
 			}
-
 		const val TAG = "HomeFragment"
 	}
 }

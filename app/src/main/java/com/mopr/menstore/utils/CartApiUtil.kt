@@ -1,7 +1,6 @@
 package com.mopr.menstore.utils
 
 import android.util.Log
-import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.CartApiService
 import com.mopr.menstore.models.Cart
 import com.mopr.menstore.models.CartItem
@@ -54,40 +53,37 @@ class CartApiUtil(private val cartApiService: CartApiService) {
 			return@withContext null
 		}
 	}
-	companion object {
-		const val TAG = "CartApiUtil"
-	}
-	suspend fun getAllCartItem(cartId: Int): List<CartItem> {
+
+	suspend fun updateCartItem(cartId: Int, cartItemId: Int, quantity: Int): CartItem? {
 		return withContext(Dispatchers.IO) {
 			try {
-				val cartItems = cartApiService.getCartItems(cartId).execute()
-				//Log.d("ChauAnh", response.body().toString())
-				if (cartItems.isSuccessful) {
-					val cartItems = cartItems.body()!!
-					return@withContext cartItems
+				val response = cartApiService.updateCartItem(cartId, cartItemId, quantity).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
 				}
-				else {
-					throw ApiException("Error getting cart items. Status code: ${cartItems.code()}")
-				}
-			}catch (e: Exception) {
-				Log.d("chauanh", e.message.toString())
+			} catch (e: Exception) {
+				Log.d(TAG, e.message.toString())
 			}
-			return@withContext listOf()
+			return@withContext null
 		}
 	}
+
 	suspend fun deleteCartItem(cartId: Int, cartItemId: Int): Boolean {
-		return withContext(Dispatchers.IO){
+		return withContext(Dispatchers.IO) {
 			try {
 				val response = cartApiService.deleteCartItem(cartId, cartItemId).execute()
-				if (response.isSuccessful) return@withContext true
-				else {
-					throw ApiException("Error update cart. Status code: ${response.code()}")
+				Log.d(TAG, "deleteCartItem: $response")
+				if (response.isSuccessful) {
+					return@withContext true
 				}
-			}
-			catch (e: Exception){
-				Log.d("updateCartError", e.message.toString())
+			} catch (e: Exception) {
+				Log.d(TAG, e.message.toString())
 			}
 			return@withContext false
 		}
+	}
+
+	companion object {
+		const val TAG = "CartApiUtil"
 	}
 }

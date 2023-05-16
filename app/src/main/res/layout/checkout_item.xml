@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
         android:orientation="vertical"
         android:weightSum="3">
 
@@ -27,7 +28,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="TextView"
-            android:textColor="@color/black" />
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_categoryOfcheckOutItem"
@@ -35,7 +37,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="TextView"
-            android:textColor="@color/black" />
+            android:textColor="@color/text_primary"
+            android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,15 +53,20 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="TextView"
-                android:textColor="@color/black" />
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_checkOutItemQuantity"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:backgroundTint="#00ffffff"
                 android:text="TextView"
-                android:textColor="@color/black" />
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

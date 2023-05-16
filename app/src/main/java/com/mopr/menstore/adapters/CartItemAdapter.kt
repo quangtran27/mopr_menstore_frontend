@@ -2,207 +2,92 @@ package com.mopr.menstore.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
+import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.mopr.menstore.databinding.CartItemBinding
+import com.mopr.menstore.R
+import com.mopr.menstore.databinding.ItemCartItemBinding
 import com.mopr.menstore.models.CartItem
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.utils.Constants
+import com.mopr.menstore.utils.Formatter
 
 
-open class CartItemAdapter(
-    private val context: Context,
-    private val cartItems: List<CartItem>,
-    private val productDetailList: List<ProductDetail>,
-    private val products: List<Product>,
-    private val images: List<ProductImage>,
-    private var checkedCartItems: MutableList<CartItem>,
-    private var checkedDetailList: MutableList<ProductDetail>,
-    private var temptTotal: Int,
-    private var tv_temptTotal: TextView,
-    private var cb_cbCartItemAll: CheckBox,
-    private val listener: OnItemClickedListener?,
-    private var checkedStates: MutableList<Boolean>
-) : RecyclerView.Adapter<CartItemAdapter.CartItemViewHolder>() {
+class CartItemAdapter(val context: Context, private val cartItems: MutableList<CartItem>, val products: MutableList<Product>, val productDetails: MutableList<ProductDetail>, private val productImagesList: MutableList<List<ProductImage>>, private val selectedCartItems: MutableList<CartItem>) : RecyclerView.Adapter<CartItemAdapter.CartItemVH>() {
+    private var listener: OnItemClickListener? = null
 
-    inner class CartItemViewHolder(private val binding: CartItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("ResourceAsColor", "SetTextI18n", "NotifyDataSetChanged")
-        fun bind(
-            position: Int,
-            cartItem: CartItem,
-            productDetail: ProductDetail,
-            product: Product,
-            image: ProductImage
-        ) {
-            //Hiển thị tên
-            binding.tvCartItemName.text = product.name
-            if (productDetail.color.equals("default_color")) {
-                productDetail.color = "black"
-            }
-            //Hiển thị chi tiết về màu và size
-            binding.tvCategoryOfCartItem.text = productDetail.size + ", " + productDetail.color
-            //Hiển thị giá theo sale
-            if (productDetail.onSale) {
-                binding.tvCartItemPrice.text = productDetail.salePrice.toString() +"đ"
-            } else {
-                binding.tvCartItemPrice.text = productDetail.price.toString() + "đ"
-            }
-            //Hiển thị số lượng ban đầu
-            binding.tvCartItemQuantity.text = "x"+cartItem.quantity.toString()
-            Glide.with(context)
-                .load(Constants.BASE_IMAGE_URL + image.image)
-                .into(binding.ivCartItem)
-            binding.cbCartItem.isChecked = checkedStates[position]
-            //Sự kiện chọn tất cả
-            cb_cbCartItemAll.setOnCheckedChangeListener{
-                _,_,->
-                if (cb_cbCartItemAll.isChecked) {
-                    for (i in 0 .. (checkedStates.size-1)){
-                        checkedStates[i] = true
-                    }
-                    checkedCartItems = cartItems as MutableList<CartItem>
-                    checkedDetailList = productDetailList as MutableList<ProductDetail>
-                    Log.d("CartActivity",checkedCartItems.toString())
-                    tamtinh(checkedCartItems,checkedDetailList)
-                }
-                else{
-                    tv_temptTotal.text = "0đ"
-                    for (i in 0 .. (checkedStates.size-1)){
-                        checkedStates[i] = false
-                    }
-                }
-                listener?.chooseAllItemsClick()
-            }
-            //Kiểm tra xem checkBox của các item có thay đổi trạng thái hay không
-            binding.cbCartItem.setOnCheckedChangeListener { _, _ ->
-                //Nếu từ false -> true
-                if (binding.cbCartItem.isChecked){
-                    if (!checkedCartItems.contains(cartItem)) //và chưa có item trong checkedCartItems thì thêm vào
-                    {
-                        checkedCartItems.add(cartItem)
-                        checkedDetailList.add(productDetail)
-                        tamtinh(checkedCartItems,checkedDetailList)
-                    }
-                }
-                //Nếu từ true -> false
-                if (!binding.cbCartItem.isChecked) {
-                    if (cb_cbCartItemAll.isChecked) {
-                        cb_cbCartItemAll.isChecked = false
-                    }
-                    //nếu trong checkedCartItems có chứa sẵn cartItem thì xóa nó đi
-                    if (checkedCartItems.contains(cartItem)) {
-                        checkedCartItems.remove(cartItem)
-                        checkedDetailList.remove(productDetail)
-                        tamtinh(checkedCartItems,checkedDetailList)
-                        Log.d("chauanh",checkedCartItems.toString())
-                    }
-                }
-                checkedStates[position]=(binding.cbCartItem.isChecked)
-            }
-            //Sự kiện tăng số lượng sản phẩm
-            binding.ivPlus.setOnClickListener {
-                if(cartItem.quantity < productDetail.quantity)
-                    cartItem.quantity += 1
-                notifyDataSetChanged()
-                if (cb_cbCartItemAll.isChecked)
-                {
-                    tamtinh(cartItems as MutableList<CartItem>,productDetailList as MutableList<ProductDetail>)
-                }
-                else
-                {
-                    binding.tvCartItemQuantity.text = (cartItem.quantity).toString()
-                    tamtinh(checkedCartItems,checkedDetailList)
-                    Log.d("chauanh",temptTotal.toString())
-                }
-            }
-            //Sự kiện giảm số lượng sản phẩm
-            binding.ivMinus.setOnClickListener {
-                if (cartItem.quantity >=1)
-                    cartItem.quantity -= 1
-                if (cartItem.quantity == 0){
-                    val deleteDialog = AlertDialog.Builder(context)
-                    deleteDialog.setMessage("Bạn có chắc muốn xóa các món hàng này?")
-                        .setPositiveButton("Xóa") { dialog, which ->
-                            cartItems.toMutableList().remove(cartItem)
-                            if(checkedCartItems.contains(cartItem)){
-                                checkedCartItems.toMutableList().remove(cartItem)
-                            }
-                            for (checkedDetail in checkedDetailList){
-                                if (checkedDetail.id == cartItem.productDetailId)
-                                    checkedDetailList.remove(checkedDetail)
-                            }
-                        }
-                        .setNegativeButton("Không") { dialog, which ->
-                            dialog.dismiss()
-                            cartItem.quantity += 1
-                            notifyDataSetChanged()
-                        }
-                        .show()
-                }
-                notifyDataSetChanged()
-                if (cb_cbCartItemAll.isChecked)
-                {
-                    tamtinh(cartItems as MutableList<CartItem>,productDetailList as MutableList<ProductDetail>)
-                }
-                else{
-
-                    binding.tvCartItemQuantity.text = (cartItem.quantity).toString()
-                    tamtinh(checkedCartItems,checkedDetailList)
-                }
-                Log.d("chauanh",temptTotal.toString())
-
-            }
-            //Nhấn xóa một item ở vị trí cụ thể
-            binding.ivDeleteCartItem.setOnClickListener(){
-                listener?.onDeleteClick(position)
-                tamtinh(checkedCartItems,checkedDetailList)
-                Log.d("ChauAnh",checkedCartItems.toString())
-            }
-        }
-    }
-    fun tamtinh(checkedCartItems: MutableList<CartItem>, checkedDetailList: MutableList<ProductDetail>) {
-        temptTotal = 0
-        var i:Int=0
-        for (item in checkedCartItems) {
-            if (checkedDetailList[i].onSale) {
-                temptTotal = temptTotal + (item.quantity * checkedDetailList[i].salePrice)
-            } else {
-                temptTotal = temptTotal + (item.quantity * checkedDetailList[i].price)
-            }
-            i++
-        }
-        tv_temptTotal.text = temptTotal.toString() + "đ"
-    }
-    public interface OnItemClickedListener{
-        fun onDeleteClick(
-            position: Int,
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemVH {
+        val binding = ItemCartItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
         )
-        fun chooseAllItemsClick(
-        )
-        fun tamtinh(checkedCartItems: MutableList<CartItem>, checkedDetailList: MutableList<ProductDetail>)
+        return CartItemVH(binding)
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {
-        val binding = CartItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CartItemViewHolder(binding)
+
+    override fun onBindViewHolder(holder: CartItemVH, position: Int) {
+        holder.bind(cartItems[position], products[position], productDetails[position], productImagesList[position])
     }
+
     override fun getItemCount() = cartItems.size
-    override fun onBindViewHolder(holder: CartItemViewHolder, position: Int) {
-        holder.bind(
-            position,
-            cartItems[position],
-            productDetailList[position],
-            products[position],
-            images[position]
-        )
+
+    inner class CartItemVH(private val binding: ItemCartItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
+        fun bind(cartItem: CartItem, product: Product, productDetail: ProductDetail, productImages: List<ProductImage>) {
+            binding.tvProductName.text = product.name
+            binding.tvProductDetail.text = "Phân loại: ${productDetail.size} - ${productDetail.color}"
+            binding.etQuantity.setText(cartItem.quantity.toString())
+            if (productImages.isNotEmpty()) {
+                Glide.with(context).load(Constants.BASE_IMAGE_URL + productImages[0].image).into(binding.ivProductImage)
+            }
+            if (productDetail.onSale) {
+                binding.tvProductOldPrice.visibility = View.VISIBLE
+                binding.tvProductPrice.text = Formatter.formatVNDAmount(productDetail.salePrice.toLong())
+                binding.tvProductOldPrice.text = Formatter.formatVNDAmount(productDetail.price.toLong())
+                binding.tvProductOldPrice.paintFlags =
+                    binding.tvProductOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                binding.tvProductOldPrice.visibility = View.GONE
+                binding.tvProductPrice.text = Formatter.formatVNDAmount(productDetail.price.toLong())
+            }
+
+            binding.cbSelected.isChecked = selectedCartItems.any { it.id == cartItem.id }
+            binding.ibIncrease.isEnabled = cartItem.quantity < productDetail.quantity
+            binding.ibDecrease.isEnabled = cartItem.quantity > 1
+            if (!binding.ibIncrease.isEnabled) {
+                binding.ibIncrease.setImageResource(R.drawable.ic_plus_gray)
+            }
+            if (!binding.ibDecrease.isEnabled) {
+                binding.ibDecrease.setImageResource(R.drawable.ic_minus_gray)
+            }
+
+            binding.cbSelected.setOnCheckedChangeListener { _, isChecked ->
+                listener?.onSelected(adapterPosition, isChecked)
+            }
+            binding.ibDelete.setOnClickListener {
+                listener?.onDeleteButtonClick(adapterPosition)
+            }
+            binding.ibIncrease.setOnClickListener {
+                listener?.onChangeQuantity(adapterPosition, cartItem.quantity + 1)
+            }
+            binding.ibDecrease.setOnClickListener {
+                listener?.onChangeQuantity(adapterPosition, cartItem.quantity - 1)
+            }
+        }
+    }
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+        fun onDeleteButtonClick(position: Int)
+        fun onChangeQuantity(position: Int, quantity: Int)
+        fun onSelected(position: Int, isChecked: Boolean)
     }
 
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
+    }
 }
