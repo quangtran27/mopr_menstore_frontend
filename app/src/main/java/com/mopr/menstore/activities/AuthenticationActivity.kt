@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
@@ -18,6 +19,7 @@ import com.mopr.menstore.models.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthenticationBinding
@@ -32,8 +34,10 @@ class AuthenticationActivity : AppCompatActivity() {
 
         //Processing click sign up button
         binding.signup.setOnClickListener {
-            binding.login.background = null
-            binding.signup.background = resources.getDrawable(R.drawable.switch_trcks, null)
+            binding.layoutLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+            binding.layoutRegister.setBackgroundColor(ContextCompat.getColor(this, R.color.primary))
+            binding.tvNote.text =
+                "Bằng cách Đăng ký tài khoản vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
             binding.loginLayout.visibility = View.GONE
             binding.signupLayout.visibility = View.VISIBLE
             binding.loginBtn.visibility = View.GONE
@@ -42,8 +46,10 @@ class AuthenticationActivity : AppCompatActivity() {
         }
         //Processing click Login button
         binding.login.setOnClickListener {
-            binding.signup.background = null
-            binding.login.background = resources.getDrawable(R.drawable.switch_trcks, null)
+            binding.layoutRegister.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+            binding.layoutLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.primary))
+            binding.tvNote.text =
+                "Bằng cách Đăng nhập vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
             binding.signupLayout.visibility = View.GONE
             binding.loginLayout.visibility = View.VISIBLE
             binding.signupBtn.visibility = View.GONE
@@ -134,7 +140,7 @@ class AuthenticationActivity : AppCompatActivity() {
         val email = binding.emailSignup.text.toString()
 
         // Validate inputs
-        if(TextUtils.isEmpty(phone)){
+        if (TextUtils.isEmpty(phone)) {
             binding.phoneSignup.error = "Vui lòng nhập thông tin!"
             binding.phoneSignup.requestFocus()
             return

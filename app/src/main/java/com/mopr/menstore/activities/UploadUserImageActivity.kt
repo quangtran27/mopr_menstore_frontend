@@ -1,32 +1,25 @@
-package com.mopr.menstore.fragments.user
+package com.mopr.menstore.activities
 
 import SharePrefManager
 import android.app.Activity
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.mopr.menstore.R
 import com.mopr.menstore.RealPathUtil
-import com.mopr.menstore.activities.ReviewActivity
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
-import com.mopr.menstore.databinding.FragmentUploadImageBinding
+import com.mopr.menstore.databinding.ActivityUploadUserImageBinding
 import com.mopr.menstore.models.User
 import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.utils.UserApiUtil
@@ -41,10 +34,10 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 
-class UploadImageFragment : Fragment() {
-    private lateinit var binding: FragmentUploadImageBinding
+class UploadUserImageActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityUploadUserImageBinding
     private lateinit var sharePrefManager: SharePrefManager
-    private lateinit var imageUri:Uri
+    private lateinit var imageUri: Uri
 
     companion object {
         private val storge_permissions = arrayOf(
@@ -69,39 +62,41 @@ class UploadImageFragment : Fragment() {
         //        val TAG = UploadImageFragment.javaClass.getName()!!
         const val MY_REQUEST_CODE : Int = 100
     }
+
     private val mActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        Log.d(TAG, "onActivityResult")
+        Log.d(ContentValues.TAG, "onActivityResult")
         if (result.resultCode == Activity.RESULT_OK){
             val data: Intent = result.data!!
             val uri : Uri = data.data!!
             imageUri = uri
             try{
-                Glide.with(requireContext()).load(imageUri).into(binding.ivAvatar)
-            }catch (e:IOException){
+                Glide.with(this).load(imageUri).into(binding.ivAvatar)
+            }catch (e: IOException){
                 e.printStackTrace()
             }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = FragmentUploadImageBinding.inflate(layoutInflater)
-        sharePrefManager = SharePrefManager.getInstance(requireContext())
+        binding = ActivityUploadUserImageBinding.inflate(layoutInflater)
+        sharePrefManager = SharePrefManager.getInstance(this)
         val userApiService = RetrofitClient.getRetrofit().create(UserApiService::class.java)
+
         binding.header.tvTitle.text = "Đổi ảnh đại diện"
-        binding.header.ibBack.setOnClickListener{
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.flMainFragmentContainer, MeFragment())
-                .commit()
+        binding.header.ibBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
+
+        setContentView(binding.root)
 
         val userApiUtil = UserApiUtil(userApiService)
 
         lifecycleScope.launch {
-           val user:User? = userApiUtil.getUserInfo(sharePrefManager.getUser().id)
+            val user: User? = userApiUtil.getUserInfo(sharePrefManager.getUser().id)
             if (user!!.image != null) {
-                Glide.with(requireContext()).load(Constants.BASE_URL1 + user.image).into(binding.ivAvatar)
+                Glide.with(this@UploadUserImageActivity).load(Constants.BASE_URL1 + user.image).into(binding.ivAvatar)
             }
         }
 
@@ -112,18 +107,14 @@ class UploadImageFragment : Fragment() {
             uploadImage(userApiUtil,userApiService)
         }
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
-    }
     private fun checkPermission(){
         if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
             openGallery()
         }else{
-            requestPermissions(permissions(), MY_REQUEST_CODE)
+            requestPermissions(
+                UploadUserImageActivity.permissions(),
+                UploadUserImageActivity.MY_REQUEST_CODE
+            )
         }
     }
 
@@ -134,7 +125,7 @@ class UploadImageFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == MY_REQUEST_CODE){
+        if (requestCode == UploadUserImageActivity.MY_REQUEST_CODE){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 openGallery()
             }
@@ -147,13 +138,13 @@ class UploadImageFragment : Fragment() {
         mActivityResultLauncher.launch(Intent.createChooser(intent, "Select picture"))
     }
 
-    private fun uploadImage(userApiUtil: UserApiUtil, userApiService:UserApiService) {
+    private fun uploadImage(userApiUtil: UserApiUtil, userApiService: UserApiService) {
         val userSaved = sharePrefManager.getUser()
 
         lifecycleScope.launch {
             val user: User? = userApiUtil.getUserInfo(userSaved.id)
 
-            val imageFile = File(RealPathUtil.getRealPath(requireContext(), imageUri)!!)
+            val imageFile = File(RealPathUtil.getRealPath(this@UploadUserImageActivity, imageUri)!!)
             val requestImageFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"), imageFile)
             val imageUser =
@@ -168,7 +159,7 @@ class UploadImageFragment : Fragment() {
                 RequestBody.create(MediaType.parse("multipart/form-data"), user.address)
 
             userApiService.uploadUserImage(
-                user!!.id,
+                user.id,
                 userNameBody,
                 userAddressBody,
                 userBirthdayBody,
@@ -178,14 +169,14 @@ class UploadImageFragment : Fragment() {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>
                 ) {
                     if(response.isSuccessful){
-                        Toast.makeText(requireContext(), "Đổi thành công!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@UploadUserImageActivity, "Đổi thành công!", Toast.LENGTH_SHORT).show()
                     }else{
-
+                        Toast.makeText(this@UploadUserImageActivity, "Thật bại!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     // handle failure
-                    Toast.makeText(requireContext(), "API Failed!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@UploadUserImageActivity, "API Failed!", Toast.LENGTH_SHORT).show()
                 }
             })
         }
