@@ -3,7 +3,12 @@ package com.mopr.menstore.utils
 import android.util.Log
 import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.ProductApiService
-import com.mopr.menstore.models.*
+import com.mopr.menstore.models.ListResponse
+import com.mopr.menstore.models.Product
+import com.mopr.menstore.models.Product2
+import com.mopr.menstore.models.ProductDetail
+import com.mopr.menstore.models.ProductImage
+import com.mopr.menstore.models.Review
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -12,6 +17,22 @@ class ProductApiUtil(private val productApiService: ProductApiService) {
 		return withContext(Dispatchers.IO) {
 			try {
 				val response = productApiService.getAll(options).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
+				} else {
+					Log.d(TAG, "getAllProduct (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getAllProduct (Exception): ${e.message}")
+			}
+			return@withContext null
+		}
+	}
+
+	suspend fun getAll2(options: Map<String, String>): ListResponse<Product2>? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = productApiService.getAll2(options).execute()
 				if (response.isSuccessful) {
 					return@withContext response.body()
 				} else {

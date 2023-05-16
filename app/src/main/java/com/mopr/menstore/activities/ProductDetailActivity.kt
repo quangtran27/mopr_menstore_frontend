@@ -46,6 +46,10 @@ class ProductDetailActivity : AppCompatActivity() {
 	private lateinit var colorsAdapter: StringAdapter
 	private lateinit var sizesAdapter: StringAdapter
 	private lateinit var reviewsAdapter: ReviewAdapter
+	private lateinit var productApiUtil: ProductApiUtil
+	private lateinit var userApiUtil: UserApiUtil
+	private lateinit var reviewApiUtil: ReviewApiUtil
+	private lateinit var cartApiUtil: CartApiUtil
 	private var product: Product? = null
 	private var productDetails: List<ProductDetail> = listOf()
 	private var productImages: List<ProductImage> = listOf()
@@ -53,10 +57,6 @@ class ProductDetailActivity : AppCompatActivity() {
 	private var reviews: List<Review> = emptyList()
 	private var users: MutableList<User> = mutableListOf()
 	private var reviewImagesList: MutableList<List<ReviewImage>> = mutableListOf()
-	private lateinit var productApiUtil: ProductApiUtil
-	private lateinit var userApiUtil: UserApiUtil
-	private lateinit var reviewApiUtil: ReviewApiUtil
-	private lateinit var cartApiUtil: CartApiUtil
 	private val sizes = mutableListOf<String>()
 	private val colors = mutableListOf<String>()
 
@@ -95,14 +95,13 @@ class ProductDetailActivity : AppCompatActivity() {
 		bindImageSlide()
 		bindProductInfo()
 		fetchReviews()
-
 	}
 
 	private fun bindImageSlide() {
 		val imageSlides = ArrayList<SlideModel>()
 		for (image in productImages as java.util.ArrayList<ProductImage>) {
 			imageSlides.add(
-				SlideModel(Constants.BASE_URL + image.image)
+				SlideModel(Constants.BASE_URL1 + image.image)
 			)
 		}
 		binding.isProductImages.setImageList(imageSlides)
@@ -160,8 +159,7 @@ class ProductDetailActivity : AppCompatActivity() {
 					reviewImagesList.add(images)
 				}
 
-				reviewsAdapter =
-					ReviewAdapter(this@ProductDetailActivity, reviews, users, reviewImagesList, 2)
+				reviewsAdapter = ReviewAdapter(this@ProductDetailActivity, reviews, users, reviewImagesList, 2)
 				binding.rvReviews.adapter = reviewsAdapter
 				reviewsAdapter.notifyDataSetChanged()
 
