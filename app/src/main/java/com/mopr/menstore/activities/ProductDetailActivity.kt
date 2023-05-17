@@ -1,5 +1,6 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Paint
@@ -72,11 +73,8 @@ class ProductDetailActivity : AppCompatActivity() {
 		}
 		binding.btnAddToCart.setOnClickListener {
 			if (selectedProductDetail.quantity > 0) {
-				// Fake user ID
-				var userId: Int? = 1
-				if (userId == null) {
-					// Forward to login
-				} else if (!isAddingToCart) {
+				val userId = (SharePrefManager.getInstance(this).getUser().id).toInt()
+				if (!isAddingToCart) {
 					if (!::cartApiUtil.isInitialized) {
 						cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))
 					}

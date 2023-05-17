@@ -81,7 +81,7 @@ class CartActivity : AppCompatActivity() {
             }
             else
             {
-                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_LONG).show()
+                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_SHORT).show()
             }
         }
 
