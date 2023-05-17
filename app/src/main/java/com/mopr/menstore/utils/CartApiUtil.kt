@@ -6,7 +6,6 @@ import com.mopr.menstore.models.Cart
 import com.mopr.menstore.models.CartItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 class CartApiUtil(private val cartApiService: CartApiService) {
 	suspend fun getCart(cartId: Int): Cart? {
@@ -54,6 +53,36 @@ class CartApiUtil(private val cartApiService: CartApiService) {
 			return@withContext null
 		}
 	}
+
+	suspend fun updateCartItem(cartId: Int, cartItemId: Int, quantity: Int): CartItem? {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = cartApiService.updateCartItem(cartId, cartItemId, quantity).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body()
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, e.message.toString())
+			}
+			return@withContext null
+		}
+	}
+
+	suspend fun deleteCartItem(cartId: Int, cartItemId: Int): Boolean {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = cartApiService.deleteCartItem(cartId, cartItemId).execute()
+				Log.d(TAG, "deleteCartItem: $response")
+				if (response.isSuccessful) {
+					return@withContext true
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, e.message.toString())
+			}
+			return@withContext false
+		}
+	}
+
 	companion object {
 		const val TAG = "CartApiUtil"
 	}

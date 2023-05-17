@@ -36,4 +36,5 @@
         <item name="android:background">@color/background_gray</item>
         <item name="android:textColor">@color/text_gray</item>
     </style>
+
 </resources>

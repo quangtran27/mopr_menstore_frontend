@@ -1,7 +1,7 @@
 package com.mopr.menstore.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.mopr.menstore.R
 import com.mopr.menstore.databinding.ActivityMainBinding
@@ -14,8 +14,8 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
-
 		binding.bnMenu.setOnItemSelectedListener {
+
 			when (it.itemId) {
 				R.id.homePage -> {
 					loadFragment(HomeFragment.newInstance())

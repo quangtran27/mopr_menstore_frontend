@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="33" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -30,6 +30,10 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.CheckoutActivity"
+            android:exported="false" />
+        <!-- Sort activities in alphabetical order (put the main activity first) -->
         <activity
             android:name=".activities.AllReviewActivity"
             android:exported="false" />
@@ -51,9 +55,6 @@
         <activity
             android:name=".activities.OrdersActivity"
             android:exported="false"/>
-        <activity
-            android:name=".activities.OrderDetailsActivity"
-            android:exported="false" />
         <activity
             android:name=".activities.ProductActivity"
             android:exported="false" />
@@ -78,6 +79,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.CartActivity"
+            android:exported="false" >
         </activity>
     </application>
 </manifest>

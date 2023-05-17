@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.mopr.menstore.databinding.OrderBinding
-import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.activities.OrderDetailsActivity
 import com.mopr.menstore.activities.ReviewActivity
+import com.mopr.menstore.databinding.OrderBinding
 import com.mopr.menstore.models.*
+import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.utils.Formatter
 
 class OrderAdapter(
@@ -55,9 +55,8 @@ class OrderAdapter(
             productDetail: ProductDetail,
             productImage: ProductImage
         ) {
-            Glide.with(context).load(Constants.BASE_URL1 + productImage.image)
+            Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image)
                 .into(binding.ivImagePro)
-
             binding.tvNamePro.text = product.name
             binding.tvClassifyPro.text = "${productDetail.color}, ${productDetail.size}"
             binding.tvQuantityPro.text = "x${orderItems[0].quantity}"

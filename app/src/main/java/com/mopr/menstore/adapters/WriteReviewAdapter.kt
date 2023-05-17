@@ -3,7 +3,6 @@ package com.mopr.menstore.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.utils.Constants
-import kotlin.math.log
 
 class WriteReviewAdapter(
     private val context: Context,
@@ -42,7 +40,7 @@ class WriteReviewAdapter(
             productImage: ProductImage,
             position: Int
         ) {
-            Glide.with(context).load(Constants.BASE_URL1 + productImage.image).into(binding.ivImagePro)
+            Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image).into(binding.ivImagePro)
             binding.tvNameProduct.text = product.name
             binding.tvClassifyProduct.text = productDetail.size + ", " + productDetail.color
             ratingDataSet.add(position, binding.rantingBar.numStars)

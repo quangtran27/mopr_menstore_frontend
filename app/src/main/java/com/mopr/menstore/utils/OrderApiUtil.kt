@@ -18,8 +18,8 @@ class OrderApiUtil (private val orderApiService: OrderApiService) {
                 }else {
                     throw ApiException("Error getting orders. Status code: ${response.code()}")
                 }
-        }catch (e: Exception){
-            return@withContext listOf()
+            }catch (e: Exception){
+                return@withContext listOf()
             }
         }
     }
@@ -63,6 +63,21 @@ class OrderApiUtil (private val orderApiService: OrderApiService) {
                 Log.d("updateOrderError", e.message.toString())
             }
         }
+    }
+
+    suspend fun addOrder(userId: Int, name: String, phone: String, address: String, payment: Int, cart_item_ids: List<Int>,note: String) {
+        return withContext(Dispatchers.IO){
+            try {
+                val response = orderApiService.addOrder(userId,name,phone,address,payment,cart_item_ids,note).execute()
+                if(!response.isSuccessful){
+                    throw ApiException("Error add order. Status code: ${response.code()}")
+                }
+            }
+            catch (e: Exception){
+                Log.d("addOrderError", e.message.toString())
+            }
+        }
+
     }
 
 }

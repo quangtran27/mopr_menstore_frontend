@@ -18,7 +18,6 @@ class WelcomeActivity : AppCompatActivity() {
 		binding = ActivityWelcomeBinding.inflate(layoutInflater)
 		sharePrefManager = SharePrefManager.getInstance(this)
 		setContentView(binding.root)
-
 		Handler(Looper.getMainLooper()).postDelayed({
 			if (sharePrefManager.isLoggedIn()){
 				startActivity(Intent(this, MainActivity::class.java))

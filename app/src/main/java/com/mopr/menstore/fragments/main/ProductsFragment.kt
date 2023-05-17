@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mopr.menstore.R
+import com.mopr.menstore.activities.CartActivity
 import com.mopr.menstore.activities.SearchActivity
 import com.mopr.menstore.adapters.CategoryAdapter
 import com.mopr.menstore.adapters.ProductAdapter
@@ -52,6 +53,9 @@ class ProductsFragment : Fragment() {
 		binding.header.etSearch.isFocusable = false
 		binding.header.etSearch.setOnClickListener {
 			startActivity(Intent(requireContext(), SearchActivity::class.java))
+		}
+		binding.header.ibCart.setOnClickListener {
+			startActivity(Intent(requireContext(), CartActivity::class.java))
 		}
 		binding.srlProducts.setOnRefreshListener {
 			products = mutableListOf()

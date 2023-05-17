@@ -63,7 +63,7 @@ class ProductAdapter (
 			binding.tvProductPrice.text = Formatter.formatVNDAmount(minPrice.toLong())
 			if (productImages.isNotEmpty()) {
 				if (productImages[0] != null) {
-					Glide.with(context).load(Constants.BASE_URL + productImages[0]!!.image).into(binding.ivProductImage)
+					Glide.with(context).load(Constants.BASE_IMAGE_URL + productImages[0]!!.image).into(binding.ivProductImage)
 				}
 			}
 

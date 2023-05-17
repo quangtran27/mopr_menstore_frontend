@@ -7,9 +7,7 @@ import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
 import com.mopr.menstore.models.Review
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 
 interface ProductApiService {
 	@GET("products/")
@@ -62,4 +60,11 @@ interface ProductApiService {
 
 	@GET("products/latest")
 	fun getLatest(): Call<List<Product>>
+
+	@GET("products/details/{product_detail_id}")
+	fun getProductDetail(@Path(value = "product_detail_id", encoded = true)productDetailId: Int): Call<ProductDetail>
+	@GET("products/{product_id}")
+	fun getProduct(@Path(value = "product_id", encoded = true)productId: Int): Call<Product>
+	@GET("products/{product_id}/images")
+	fun getImagesByProduct(@Path(value = "product_id", encoded = true)productId: Int): Call<List<ProductImage>>
 }

@@ -50,7 +50,7 @@ class OrderItemAdapter(
             productDetail: ProductDetail,
             productImage: ProductImage
         ) {
-            Glide.with(context).load(Constants.BASE_URL1 + productImage.image)
+            Glide.with(context).load(Constants.BASE_IMAGE_URL + productImage.image)
                 .into(binding.ivImageItem)
             binding.tvNameItem.text = product.name
             binding.tvClassifyItem.text = productDetail.color + ", " + productDetail.size

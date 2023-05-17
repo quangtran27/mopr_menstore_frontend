@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.denzcoskun.imageslider.models.SlideModel
+import com.mopr.menstore.activities.CartActivity
 import com.mopr.menstore.activities.SearchActivity
 import com.mopr.menstore.adapters.CompactProductAdapter
 import com.mopr.menstore.api.BannerApiService
@@ -48,7 +49,7 @@ class HomeFragment : Fragment() {
 			startActivity(Intent(requireContext(), SearchActivity::class.java))
 		}
 		binding.header.ibCart.setOnClickListener {
-			// startActivity(Intent(requireContext(), CartActivity))
+			startActivity(Intent(requireContext(), CartActivity::class.java))
 		}
 
 		productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))

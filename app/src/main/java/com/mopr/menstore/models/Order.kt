@@ -13,7 +13,7 @@ data class Order(
 	val shippingFee: Int, // 1: COD, 2: Chuyển khoản ngân hàng, 3: Khác
 	val isPaid: Boolean,
 	val isReviewed: Boolean,
-	val note: String,
+	var note: String,
 	val total: Int,
 //	val orderItems: List<OrderItem>,
 )
