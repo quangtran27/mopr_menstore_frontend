@@ -20,11 +20,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthenticationBinding
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +35,7 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.signup.setOnClickListener {
             binding.layoutLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
             binding.layoutRegister.setBackgroundColor(ContextCompat.getColor(this, R.color.primary))
-            binding.tvNote.text =
-                "Bằng cách Đăng ký tài khoản vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
+            binding.tvNote.text = "Bằng cách Đăng ký tài khoản vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
             binding.loginLayout.visibility = View.GONE
             binding.signupLayout.visibility = View.VISIBLE
             binding.loginBtn.visibility = View.GONE
@@ -48,8 +46,7 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.login.setOnClickListener {
             binding.layoutRegister.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
             binding.layoutLogin.setBackgroundColor(ContextCompat.getColor(this, R.color.primary))
-            binding.tvNote.text =
-                "Bằng cách Đăng nhập vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
+            binding.tvNote.text = "Bằng cách Đăng nhập vào shop, bạn đã đồng ý với Chính sách cookie và Điều khoản bảo mật của chúng tôi!"
             binding.signupLayout.visibility = View.GONE
             binding.loginLayout.visibility = View.VISIBLE
             binding.signupBtn.visibility = View.GONE
@@ -187,6 +184,10 @@ class AuthenticationActivity : AppCompatActivity() {
                                 "Đăng ký thành công!",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            binding.login.post {
+                                kotlin.run { binding.login.performClick() }
+                            }
                         }
                     } else {
                         // Register error

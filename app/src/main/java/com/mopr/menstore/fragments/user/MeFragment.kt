@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.mopr.menstore.R
 import com.mopr.menstore.activities.ChangePasswordActivity
 import com.mopr.menstore.activities.EditProfileActivity
 import com.mopr.menstore.activities.MeDetailActivity
@@ -16,6 +17,11 @@ import com.mopr.menstore.activities.OrdersActivity
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.FragmentMeBinding
+import com.mopr.menstore.fragments.orders.CancelledFragment
+import com.mopr.menstore.fragments.orders.CompletedFragment
+import com.mopr.menstore.fragments.orders.ToPayFragment
+import com.mopr.menstore.fragments.orders.ToReceiveFragment
+import com.mopr.menstore.fragments.orders.ToShipFragment
 import com.mopr.menstore.models.Order
 import com.mopr.menstore.models.User
 import com.mopr.menstore.utils.Constants
@@ -26,6 +32,7 @@ import kotlinx.coroutines.launch
 class MeFragment : Fragment() {
 	private lateinit var binding: FragmentMeBinding
 	private lateinit var sharePrefManager: SharePrefManager
+	private lateinit var userSaved: User
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -52,24 +59,29 @@ class MeFragment : Fragment() {
 		binding.tvEditProfile.setOnClickListener{
 			startActivity(Intent(requireContext(), EditProfileActivity::class.java))
 		}
-		binding.tvLogout.setOnClickListener {
-			sharePrefManager.clearUser()
-		}
+		binding.ivAvatar.setOnClickListener { startActivity(Intent(requireContext(), MeDetailActivity::class.java)) }
 		loadData()
+
+		binding.tvConfirming.setOnClickListener {
+			loadFragment(ToPayFragment.newInstance(userSaved.id.toInt()))
+		}
+		binding.tvConfirmed.setOnClickListener {
+			loadFragment(ToShipFragment.newInstance(userSaved.id.toInt()))
+		}
+		binding.tvShipping.setOnClickListener {
+			loadFragment(ToReceiveFragment.newInstance(userSaved.id.toInt()))
+		}
+		binding.tvShipped.setOnClickListener {
+			loadFragment(CompletedFragment.newInstance(userSaved.id.toInt()))
+		}
+		binding.tvCancelled.setOnClickListener {
+			loadFragment(CancelledFragment.newInstance(userSaved.id.toInt()))
+		}
 
 		return binding.root
 	}
-
-		companion object {
-		@JvmStatic
-		fun newInstance(param1: String, param2: String) =
-			MeFragment().apply {
-				arguments = Bundle().apply {
-				}
-			}
-	}
 	private fun loadData(){
-		val userSaved: User = sharePrefManager.getUser()
+		userSaved = sharePrefManager.getUser()
 		val userApiService = RetrofitClient.getRetrofit().create(UserApiService::class.java)
 		val userApiUtil = UserApiUtil(userApiService)
 		//Display user info
@@ -98,8 +110,8 @@ class MeFragment : Fragment() {
 							5 -> canceled++
 						}
 					}
-					binding.numConfirmed.text = confirming.toString()
-					binding.numConfirming.text = confirmed.toString()
+					binding.numConfirming.text = confirming.toString()
+					binding.numConfirmed.text = confirmed.toString()
 					binding.numDelivering.text = delivering.toString()
 					binding.numDelivered.text = delivered.toString()
 					binding.numCanceled.text = canceled.toString()
@@ -110,5 +122,11 @@ class MeFragment : Fragment() {
 	override fun onResume() {
 		super.onResume()
 		loadData()
+	}
+
+	private fun loadFragment(fragment: Fragment) {
+		parentFragmentManager.beginTransaction()
+			.replace(R.id.flMainFragmentContainer, fragment)
+			.commit()
 	}
 }

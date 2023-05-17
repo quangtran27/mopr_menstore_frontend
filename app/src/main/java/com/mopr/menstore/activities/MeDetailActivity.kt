@@ -31,7 +31,11 @@ class MeDetailActivity : AppCompatActivity() {
         binding.header.ibBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-       loadData()
+
+        binding.tvLogout.setOnClickListener {
+            sharePrefManager.clearUser()
+        }
+        loadData()
     }
     private fun loadData(){
         // Display user info through share-preferences saved

@@ -1,10 +1,12 @@
 package com.mopr.menstore.activities
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AbsListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
@@ -26,8 +28,7 @@ import kotlinx.coroutines.launch
 
 
 class SearchResultActivity : AppCompatActivity() {
-	private val starOptions =
-		mutableListOf("Từ 0 sao", "Từ 1 sao", "Từ 2 sao", "Từ 3 sao", "Từ 4 sao", "Từ 5 sao")
+	private val starOptions = mutableListOf("Từ 0 sao", "Từ 1 sao", "Từ 2 sao", "Từ 3 sao", "Từ 4 sao", "Từ 5 sao")
 	private val starOptionsMapping = mutableListOf("0", "1", "2", "3", "4", "5")
 	private val sortByOptions = mutableListOf("Mặc định", "Giá bán", "Bán chạy nhất", "Mới nhất")
 	private val sortByOptionsMapping = mutableListOf("", "price", "sales", "created")
@@ -75,7 +76,9 @@ class SearchResultActivity : AppCompatActivity() {
 			onBackPressedDispatcher.onBackPressed()
 		}
 		binding.header.etSearch.setOnClickListener {
-			onBackPressedDispatcher.onBackPressed()
+			val intent = Intent(this, SearchActivity::class.java)
+			intent.putExtra("keyword", "")
+			startActivity(intent)
 		}
 		binding.header.btnFilter.setOnClickListener {
 			binding.header.btnFilter.setOnClickListener {
@@ -83,12 +86,19 @@ class SearchResultActivity : AppCompatActivity() {
 			}
 		}
 		binding.btnApply.setOnClickListener {
-			lifecycleScope.launch {
-				currentPage = 1
-				products = mutableListOf()
-				productDetailsList = mutableListOf()
-				productImagesList = mutableListOf()
-				fetchProducts()
+			val minPrice = binding.etMinPrice.text.trim().toString()
+			val maxPrice = binding.etMaxPrice.text.trim().toString()
+
+			if (minPrice.toDoubleOrNull() != null && maxPrice.toDoubleOrNull() != null) {
+				lifecycleScope.launch {
+					currentPage = 1
+					products = mutableListOf()
+					productDetailsList = mutableListOf()
+					productImagesList = mutableListOf()
+					fetchProducts()
+				}
+			} else {
+				Toast.makeText(this, "Mức giá không hợp lệ", Toast.LENGTH_SHORT).show()
 			}
 		}
 
@@ -123,7 +133,7 @@ class SearchResultActivity : AppCompatActivity() {
 		val options: Map<String, String> = mapOf(
 			"page" to "$currentPage",
 			"name" to keyword,
-			"category_id" to "${categories.find { category -> category.name == selectedCategory }?.id}",
+			"categoryId" to "${categories.find { category -> category.name == selectedCategory }?.id}",
 			"star" to starOptionsMapping[starOptions.indexOf(selectedStar)],
 			"sortBy" to sortByOptionsMapping[sortByOptions.indexOf(selectedSortBy)],
 			"order" to orderOptionsMapping[orderOptions.indexOf(selectedOrder)],
@@ -155,41 +165,47 @@ class SearchResultActivity : AppCompatActivity() {
 
 	@SuppressLint("NotifyDataSetChanged")
 	private fun bindProducts() {
-		binding.rvProducts.apply {
-			setHasFixedSize(true)
-			addOnScrollListener(object : RecyclerView.OnScrollListener() {
-				override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-					if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-						isScrolling = true
-					}
-				}
-
-				@SuppressLint("NotifyDataSetChanged")
-				override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-					val manager: LinearLayoutManager = layoutManager as LinearLayoutManager
-					val currentItems = manager.childCount
-					val totalItems = manager.itemCount
-					val scrollOutItems = manager.findFirstVisibleItemPosition()
-
-					if (isScrolling && (currentItems + scrollOutItems == totalItems) && (currentItems + scrollOutItems < total)) {
-						currentPage += 1
-						lifecycleScope.launch {
-							binding.progressBar.visibility = View.VISIBLE
-							Log.d(
-								TAG,
-								"onScrolled: fetch more with current page: $currentPage"
-							)
-							fetchProducts()
-							isScrolling = false
-							binding.progressBar.visibility = View.GONE
-							productAdapter.notifyDataSetChanged()
+		if (products.isNotEmpty()) {
+			binding.tvEmptyProducts.visibility = View.GONE
+			binding.rvProducts.apply {
+				setHasFixedSize(true)
+				addOnScrollListener(object : RecyclerView.OnScrollListener() {
+					override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+						if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+							isScrolling = true
 						}
 					}
 
-				}
-			})
+					@SuppressLint("NotifyDataSetChanged")
+					override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+						val manager: LinearLayoutManager = layoutManager as LinearLayoutManager
+						val currentItems = manager.childCount
+						val totalItems = manager.itemCount
+						val scrollOutItems = manager.findFirstVisibleItemPosition()
+
+						if (isScrolling && (currentItems + scrollOutItems == totalItems) && (currentItems + scrollOutItems < total)) {
+							currentPage += 1
+							lifecycleScope.launch {
+								binding.progressBar.visibility = View.VISIBLE
+								Log.d(
+									TAG,
+									"onScrolled: fetch more with current page: $currentPage"
+								)
+								fetchProducts()
+								isScrolling = false
+								binding.progressBar.visibility = View.GONE
+								productAdapter.notifyDataSetChanged()
+							}
+						}
+
+					}
+				})
+			}
+
+			productAdapter.notifyDataSetChanged()
+		} else {
+			binding.tvEmptyProducts.visibility = View.VISIBLE
 		}
-		productAdapter.notifyDataSetChanged()
 	}
 
 	private fun setSelectedOrder(order: String) {

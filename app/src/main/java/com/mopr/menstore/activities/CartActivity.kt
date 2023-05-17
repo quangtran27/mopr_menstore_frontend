@@ -1,5 +1,6 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
@@ -29,7 +30,6 @@ import kotlinx.coroutines.launch
 class CartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCartBinding
 
-    private var userId = 1
     private var cart: Cart? = null
     private var cartItems: MutableList<CartItem> = mutableListOf()
     private var products: MutableList<Product> = mutableListOf()
@@ -78,21 +78,14 @@ class CartActivity : AppCompatActivity() {
                 val intent = Intent(this, CheckoutActivity::class.java)
                 intent.putExtra("jsonSelectedCartItems", gson.toJson(selectedCartItems))
                 startActivity(intent)
-            }
-            else
-            {
-                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!",Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this@CartActivity,"Bạn chưa chọn sản phẩm nào để mua!", Toast.LENGTH_SHORT).show()
             }
         }
 
         cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))
         productApiUtil = ProductApiUtil(RetrofitClient.getRetrofit().create(ProductApiService::class.java))
         userApiUtil = UserApiUtil(RetrofitClient.getRetrofit().create(UserApiService::class.java))
-        fetchData()
-    }
-
-    override fun onResume() {
-        super.onResume()
         fetchData()
     }
 
@@ -104,7 +97,7 @@ class CartActivity : AppCompatActivity() {
         selectedCartItems.clear()
 
         lifecycleScope.launch {
-            cart = userApiUtil.getCart(userId)
+            cart = userApiUtil.getCart(SharePrefManager.getInstance(this@CartActivity).getUser().id.toInt())
             Log.d(TAG, "cart: $cart")
             if (cart != null) {
                 cartItems = cartApiUtil.getCartItems(cart!!.id) as MutableList<CartItem>
@@ -126,8 +119,6 @@ class CartActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun bindData() {
-        Log.d(TAG,"cartItem: ${cartItems}")
-
         binding.cbSelectAll.setOnCheckedChangeListener(null)
         binding.cbSelectAll.isChecked = selectedCartItems.size == cartItems.size
         binding.cbSelectAll.setOnCheckedChangeListener(selectAllCheckedChangeListener)
@@ -151,9 +142,7 @@ class CartActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
 
         adapter.setOnItemClickListener(object : CartItemAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                Log.d(TAG, "onItemClick: CLICK ON POSITION $position")
-            }
+            override fun onItemClick(position: Int) { }
 
             override fun onDeleteButtonClick(position: Int) {
                 if (!isUpdatingCartItem) {
@@ -208,8 +197,6 @@ class CartActivity : AppCompatActivity() {
             }
         })
     }
-
-
 
     companion object {
         const val TAG = "CartActivity"

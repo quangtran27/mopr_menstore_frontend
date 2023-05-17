@@ -1,9 +1,9 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Paint
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mopr.menstore.R
 import com.mopr.menstore.adapters.ReviewAdapter
 import com.mopr.menstore.adapters.StringAdapter
@@ -50,33 +51,29 @@ class ProductDetailActivity : AppCompatActivity() {
 	private lateinit var userApiUtil: UserApiUtil
 	private lateinit var reviewApiUtil: ReviewApiUtil
 	private lateinit var cartApiUtil: CartApiUtil
+	private lateinit var selectedProductDetail: ProductDetail
 	private var product: Product? = null
 	private var productDetails: List<ProductDetail> = listOf()
 	private var productImages: List<ProductImage> = listOf()
-	private lateinit var selectedProductDetail: ProductDetail
 	private var reviews: List<Review> = emptyList()
 	private var users: MutableList<User> = mutableListOf()
 	private var reviewImagesList: MutableList<List<ReviewImage>> = mutableListOf()
 	private val sizes = mutableListOf<String>()
 	private val colors = mutableListOf<String>()
-
 	private var isAddingToCart = false
+
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = ActivityProductDetailBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
-		binding.header.ibBack.setOnClickListener {
-			onBackPressedDispatcher.onBackPressed()
-		}
+		binding.header.ibBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+		binding.header.ibCart.setOnClickListener { startActivity(Intent(this, CartActivity::class.java)) }
 		binding.btnAddToCart.setOnClickListener {
 			if (selectedProductDetail.quantity > 0) {
-				// Fake user ID
-				var userId: Int? = 1
-				if (userId == null) {
-					// Forward to login
-				} else if (!isAddingToCart) {
+				val userId = (SharePrefManager.getInstance(this).getUser().id).toInt()
+				if (!isAddingToCart) {
 					if (!::cartApiUtil.isInitialized) {
 						cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))
 					}
@@ -90,7 +87,7 @@ class ProductDetailActivity : AppCompatActivity() {
 			}
 		}
 
-		getProductInfo()
+		getProductInfo() // Get product info from intent
 		setSelectedDetail(productDetails[0])
 		bindImageSlide()
 		bindProductInfo()
@@ -185,15 +182,11 @@ class ProductDetailActivity : AppCompatActivity() {
 	}
 
 	private fun getProductInfo() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			product = intent.getParcelableExtra("product", Product::class.java)
-			productDetails = intent.getParcelableArrayListExtra("productDetails", ProductDetail::class.java)!!
-			productImages = intent.getParcelableArrayListExtra("productImages", ProductImage::class.java)!!
-		} else {
-			product = intent.getParcelableExtra("product")
-			productDetails = intent.getParcelableArrayListExtra("productDetails")!!
-			productImages = intent.getParcelableArrayListExtra("productImages")!!
-		}
+		val gson = Gson()
+		product = gson.fromJson(intent.getStringExtra("product"), Product::class.java)
+		productDetails = gson.fromJson(intent.getStringExtra("productDetails"), object : TypeToken<List<ProductDetail>>() {}.type)
+		productImages = gson.fromJson(intent.getStringExtra("productImages"), object : TypeToken<List<ProductImage>>() {}.type)
+
 		for (detail in productDetails) {
 			if (detail.size !in sizes) {
 				sizes.add(detail.size)
@@ -215,38 +208,23 @@ class ProductDetailActivity : AppCompatActivity() {
 			binding.tvProductOldPrice.visibility = View.VISIBLE
 			binding.tvProductPrice.text = Formatter.formatVNDAmount(detail.salePrice.toLong())
 			binding.tvProductOldPrice.text = Formatter.formatVNDAmount(detail.price.toLong())
-			binding.tvProductOldPrice.paintFlags =
-				binding.tvProductOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+			binding.tvProductOldPrice.paintFlags = binding.tvProductOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 		} else {
 			binding.tvProductOldPrice.visibility = View.GONE
 			binding.tvProductPrice.text = Formatter.formatVNDAmount(detail.price.toLong())
 		}
 
 		// Find and match available choices
-		sizesAdapter = StringAdapter(
-			this@ProductDetailActivity,
-			sizes,
-			findAvailableSizes(detail.color),
-			detail.size
-		)
+		sizesAdapter = StringAdapter(this, sizes, findAvailableSizes(detail.color), detail.size)
+		colorsAdapter = StringAdapter(this@ProductDetailActivity, colors, findAvailableColors(detail.size), detail.color)
 		sizesAdapter.setOnItemClickListener(object : StringAdapter.OnItemClickListener {
 			override fun onItemClick(position: Int) {
-				productDetails.find {
-					it.size == sizes[position] && it.color == selectedProductDetail.color
-				}?.let { setSelectedDetail(it) }
+				productDetails.find { it.size == sizes[position] && it.color == selectedProductDetail.color }?.let { setSelectedDetail(it) }
 			}
 		})
-		colorsAdapter = StringAdapter(
-			this@ProductDetailActivity,
-			colors,
-			findAvailableColors(detail.size),
-			detail.color
-		)
 		colorsAdapter.setOnItemClickListener(object : StringAdapter.OnItemClickListener {
 			override fun onItemClick(position: Int) {
-				productDetails.find {
-					it.color == colors[position] && it.size == selectedProductDetail.size
-				}?.let { setSelectedDetail(it) }
+				productDetails.find { it.color == colors[position] && it.size == selectedProductDetail.size }?.let { setSelectedDetail(it) }
 			}
 		})
 		binding.rvProductColors.adapter = colorsAdapter
@@ -271,19 +249,19 @@ class ProductDetailActivity : AppCompatActivity() {
 	private fun addToCart(cartId: Int, productDetailId: Int, quantity: Int) {
 		isAddingToCart = true
 		val toast = Toast(this@ProductDetailActivity)
-		toast.duration = Toast.LENGTH_LONG
+		toast.duration = Toast.LENGTH_SHORT
 		toast.setGravity(Gravity.CENTER, 0, 0)
 		lifecycleScope.launch {
 			val cartItem = cartApiUtil.addToCart(cartId, productDetailId, quantity)
 			if (cartItem != null) {
-				toast.setText("Thêm sản phẩm vào giỏ hàng thành công")
+				toast.setText("Thêm thành công!")
 			} else {
-				toast.setText("Thêm sản phẩm vào giỏ hàng không thành công.\nĐã xảy ra lỗi!!!")
+				toast.setText("Thêm không thành công...")
 			}
 			toast.show()
 			Handler(Looper.getMainLooper()).postDelayed({
 				isAddingToCart = false
-			}, (Toast.LENGTH_LONG * 1000).toLong())
+			}, (Toast.LENGTH_SHORT * 1000).toLong())
 		}
 	}
 	private fun findAvailableSizes(color: String): List<String> = productDetails.filter { it.color == color }.map { it.size }
@@ -291,5 +269,4 @@ class ProductDetailActivity : AppCompatActivity() {
 	companion object {
 		const val TAG = "ProductDetail"
 	}
-
 }

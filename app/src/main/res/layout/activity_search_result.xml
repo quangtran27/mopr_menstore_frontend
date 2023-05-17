@@ -8,9 +8,10 @@
     android:background="@color/background_gray"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".activities.SearchResultActivity">
 
         <include
@@ -20,15 +21,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tvEmptyProducts"
+            android:layout_width="match_parent"
+            android:layout_marginTop="44dp"
+            android:layout_height="wrap_content"
+            android:text="Không có sản phẩm"
+            android:textColor="@color/text_primary"
+            android:gravity="center" />
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProducts"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:layout_weight="1"
             android:background="@color/background_gray"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/progressBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/header"
@@ -41,17 +50,17 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:indeterminate="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rvProducts"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <!--        android:layout_gravity="end"-->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nvMain"
         android:layout_width="400dp"
-        android:layout_gravity="end"
         android:layout_height="match_parent"
+        android:layout_gravity="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -68,6 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:text="Bộ lọc"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp" />
 
             <ScrollView
@@ -83,6 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sắp xếp theo"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp" />
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_marginTop="8dp"
@@ -96,6 +107,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Thứ tự"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp" />
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_marginTop="8dp"
@@ -109,6 +121,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Theo danh mục"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp" />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -122,6 +135,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
                         android:text="Theo giá"
                         android:layout_marginTop="12dp"
                         android:textSize="18sp" />
@@ -142,6 +156,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
+                            android:textColor="@color/text_primary"
                             android:layout_weight="0.5" />
 
                         <TextView
@@ -154,6 +169,7 @@
                             android:id="@+id/etMaxPrice"
                             android:textSize="16sp"
                             android:layout_width="0dp"
+                            android:textColor="@color/text_primary"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5" />
                     </LinearLayout>
@@ -163,6 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Theo đánh giá"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp" />
 
                     <androidx.recyclerview.widget.RecyclerView
