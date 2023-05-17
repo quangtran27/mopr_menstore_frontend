@@ -56,7 +56,7 @@ class ProductAdapter2(val context: Context, val products: List<Product2>) : List
 			binding.tvProductSold.text = "Đã bán $sold"
 			binding.tvProductPrice.text = Formatter.formatVNDAmount(minPrice.toLong())
 			if (product.images.isNotEmpty()) {
-				Glide.with(context).load(Constants.BASE_URL + product.images[0]).into(binding.ivProductImage)
+				Glide.with(context).load(Constants.BASE_IMAGE_URL + product.images[0]).into(binding.ivProductImage)
 			}
 
 			binding.root.setOnClickListener {

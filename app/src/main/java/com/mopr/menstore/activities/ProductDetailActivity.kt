@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewTreeObserver
@@ -140,7 +141,8 @@ class ProductDetailActivity : AppCompatActivity() {
 				binding.tvReviewsCountTop.text = "${reviews.size} đánh giá"
 				binding.tvReviewsCountBot.text = "${reviews.size} đánh giá"
 				var averageRate = reviews.map { it.star.toFloat() }.average()
-				averageRate = String.format("%.1f", averageRate).toDouble()
+				Log.d(TAG, "fetchReviews: $averageRate")
+//				averageRate = String.format("%.1f", averageRate).toDouble()
 				binding.rbRate.rating = averageRate.toFloat()
 				binding.rbRate2.rating = averageRate.toFloat()
 				if (!averageRate.isNaN()) {

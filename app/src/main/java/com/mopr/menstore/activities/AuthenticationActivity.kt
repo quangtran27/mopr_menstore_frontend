@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -16,6 +17,7 @@ import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.ActivityAuthenticationBinding
 import com.mopr.menstore.models.User
+import com.mopr.menstore.utils.Constants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,8 +84,8 @@ class AuthenticationActivity : AppCompatActivity() {
             binding.username.requestFocus()
         } else {
             //Initialize a UserApiService object from the Retrofit object
-            val userLoginApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
 
+            val userLoginApi = RetrofitClient.getRetrofit().create(UserApiService::class.java)
             userLoginApi.login(phone, password).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful) {
