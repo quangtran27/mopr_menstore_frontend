@@ -33,7 +33,7 @@ interface OrderApiService {
         @Field("phone") phone: String,
         @Field("address") address: String,
         @Field("payment") payment: Int,
-        @Field("cart_item_ids") cart_item_ids: List<Int>,
+        @Field("cart_item_ids") cart_item_ids: String,
         @Field("note") note: String
     ):Call<RequestBody>
 

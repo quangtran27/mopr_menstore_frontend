@@ -30,7 +30,7 @@ class CategoryAdapter(
 		fun bind(category: Category) {
 			binding.tvCategoryName.text = category.name
 			if (category.image != null) {
-				Glide.with(context).load(Constants.BASE_URL + category.image).into(binding.ivCategoryImage)
+				Glide.with(context).load(Constants.BASE_IMAGE_URL + category.image).into(binding.ivCategoryImage)
 			} else {
 				Glide.with(context).load(R.drawable.ic_launcher_background).into(binding.ivCategoryImage)
 			}

@@ -65,7 +65,7 @@ class OrderApiUtil (private val orderApiService: OrderApiService) {
         }
     }
 
-    suspend fun addOrder(userId: Int, name: String, phone: String, address: String, payment: Int, cart_item_ids: List<Int>,note: String) {
+    suspend fun addOrder(userId: Int, name: String, phone: String, address: String, payment: Int, cart_item_ids: String, note: String) {
         return withContext(Dispatchers.IO){
             try {
                 val response = orderApiService.addOrder(userId,name,phone,address,payment,cart_item_ids,note).execute()

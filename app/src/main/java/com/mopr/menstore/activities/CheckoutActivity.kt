@@ -86,7 +86,7 @@ class CheckoutActivity : AppCompatActivity() {
                 Log.d(TAG, "confirmOrder: name: $phone")
                 Log.d(TAG, "confirmOrder: name: $address")
                 Log.d(TAG, "confirmOrder: name: $note")
-                orderApiUtil.addOrder(user.id.toInt(), name, phone, address, 1, cartItemIds, note)
+                orderApiUtil.addOrder(user.id.toInt(), name, phone, address, 1, cartItemIds.joinToString(","), note)
                 confirmDialog.dismiss()
                 displayAddOrderSuccessDialog()
             }

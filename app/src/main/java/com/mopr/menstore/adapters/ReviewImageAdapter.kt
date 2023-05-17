@@ -30,7 +30,7 @@ class ReviewImageAdapter(
 	inner class ReviewImageViewHolder(val binding: ItemReviewImageBinding) :
 		RecyclerView.ViewHolder(binding.root) {
 		fun bind(image: ReviewImage) {
-			Glide.with(binding.root).load(Constants.BASE_URL + image.image).into(binding.ivReviewImage)
+			Glide.with(binding.root).load(Constants.BASE_IMAGE_URL + image.image).into(binding.ivReviewImage)
 		}
 	}
 }
