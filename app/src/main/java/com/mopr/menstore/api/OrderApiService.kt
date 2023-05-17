@@ -36,6 +36,4 @@ interface OrderApiService {
         @Field("cart_item_ids") cart_item_ids: String,
         @Field("note") note: String
     ):Call<RequestBody>
-
-
 }
