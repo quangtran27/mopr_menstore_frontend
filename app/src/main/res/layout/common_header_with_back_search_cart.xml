@@ -33,6 +33,7 @@
         android:inputType="text"
         android:paddingHorizontal="16dp"
         android:textColorHint="#959595"
+        android:textColor="@color/text_primary"
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
 

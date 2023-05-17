@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import com.mopr.menstore.activities.ProductDetailActivity
 import com.mopr.menstore.databinding.ItemProductBinding
 import com.mopr.menstore.models.Product
@@ -69,10 +70,11 @@ class ProductAdapter (
 
 			binding.root.setOnClickListener {
 				val intent = Intent(context, ProductDetailActivity::class.java)
-				intent.putExtra("product", product)
-				intent.putParcelableArrayListExtra("productDetails", ArrayList(productDetails))
-				intent.putParcelableArrayListExtra("productImages", ArrayList(productImages))
-				intent.putExtra("product", product)
+
+				val gson = Gson()
+				intent.putExtra("product", gson.toJson(product))
+				intent.putExtra("productDetails", gson.toJson(productDetails))
+				intent.putExtra("productImages", gson.toJson(productImages))
 				itemView.context.startActivity(intent)
 			}
 		}

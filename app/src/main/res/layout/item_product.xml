@@ -14,7 +14,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="324dp"
             android:background="@color/white"
             android:padding="1dp">
 
@@ -38,7 +38,7 @@
                 android:layout_margin="12dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:text="Cố ý viết dài để tạo ra dấu ba chấm nè. Cố ý viết dài để tạo dấu ba chấm nè"
+                android:text="Tên sản phẩm"
                 android:textColor="@color/primary"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"

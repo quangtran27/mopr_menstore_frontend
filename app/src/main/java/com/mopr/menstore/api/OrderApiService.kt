@@ -7,7 +7,6 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface OrderApiService {
-
     @GET("users/{user_id}/orders")
     fun getOrdersByUser(@Path(value = "user_id", encoded = true)userId: Int): Call<List<Order>>
 
@@ -17,25 +16,25 @@ interface OrderApiService {
     @GET("orders/{order_id}")
     fun getOrder(@Path(value = "order_id", encoded = true)orderId: Int): Call<Order>
 
-    @Multipart
+    @FormUrlEncoded
     @PUT("orders/{order_id}")
     fun updateOrder(
         @Path(value = "order_id", encoded = true)orderId: Int,
-        @Part("status") status: Int,
-        @Part("is_paid") isPaid: Int,
-        @Part("is_reviewed") isReviewed: Int
+        @Field("status") status: Int,
+        @Field("is_paid") isPaid: Int,
+        @Field("is_reviewed") isReviewed: Int
         ): Call<RequestBody>
 
-    @Multipart
+    @FormUrlEncoded
     @POST("orders/")
     fun addOrder(
-        @Part("user_id") user_id: Int,
-        @Part("name") name: String,
-        @Part("phone") phone: String,
-        @Part("address") address: String,
-        @Part("payment") payment: Int,
-        @Part("cart_item_ids") cart_item_ids: List<Int>,
-        @Part("note") note: String
+        @Field("user_id") user_id: Int,
+        @Field("name") name: String,
+        @Field("phone") phone: String,
+        @Field("address") address: String,
+        @Field("payment") payment: Int,
+        @Field("cart_item_ids") cart_item_ids: List<Int>,
+        @Field("note") note: String
     ):Call<RequestBody>
 
 

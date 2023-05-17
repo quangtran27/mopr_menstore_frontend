@@ -24,10 +24,10 @@ class MainActivity : AppCompatActivity() {
 					loadFragment(ProductsFragment.newInstance(0))
 				}
 				R.id.notiPage -> {
-					loadFragment(NotificationFragment.newInstance("", ""))
+					loadFragment(NotificationFragment())
 				}
 				R.id.mePage -> {
-					loadFragment(MeFragment.newInstance("",""))
+					loadFragment(MeFragment())
 				}
 			}
 			true

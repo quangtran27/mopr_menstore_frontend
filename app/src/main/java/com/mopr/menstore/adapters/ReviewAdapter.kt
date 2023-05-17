@@ -43,7 +43,7 @@ class ReviewAdapter(
 			binding.tvUserName.text = user.name
 			binding.tvReviewBody.text = review.desc
 			binding.rbRate.rating = review.star.toFloat()
-			Glide.with(context).load(Constants.BASE_URL1 + user.image).into(binding.ivUserImage)
+			Glide.with(context).load(Constants.BASE_URL + user.image).into(binding.ivUserImage)
 
 			val reviewImageAdapter = ReviewImageAdapter(context, images)
 			binding.rvReviewImages.adapter = reviewImageAdapter

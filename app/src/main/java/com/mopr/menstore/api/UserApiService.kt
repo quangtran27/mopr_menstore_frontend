@@ -42,11 +42,11 @@ interface UserApiService {
     @GET("users/{id}/orders")
     fun getOrders(@Path("id") id: String): Call<List<Order>>
 
-    @PATCH("users/{id}/password")
+    @PUT("users/{id}/password")
     @FormUrlEncoded
     fun changePassword(@Path("id") id: String, @Field("old_password") oldPassword: String, @Field("new_password") newPassword: String): Call<Void>
 
-    @PATCH("users/{id}")
+    @PUT("users/{id}")
     @FormUrlEncoded
     fun updateUserInfo(
         @Path("id") id: String,
@@ -58,7 +58,7 @@ interface UserApiService {
     ): Call<Void>
 
     @Multipart
-    @PATCH("users/{id}")
+    @PUT("users/{id}")
     fun uploadUserImage(
         @Path("id") id: String,
         @Part("name") name: RequestBody,

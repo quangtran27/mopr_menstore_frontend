@@ -95,7 +95,7 @@ class ProductsFragment : Fragment() {
 
 	private suspend fun fetchProducts() {
 		val options: Map<String, String> = mapOf(
-			"page" to "$currentPage", "category_id" to "$categoryId"
+			"page" to "$currentPage", "categoryId" to "$categoryId"
 		)
 
 		val productsResponse = productApiUtil.getAll(options)

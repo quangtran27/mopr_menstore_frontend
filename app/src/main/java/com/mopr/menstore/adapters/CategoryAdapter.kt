@@ -32,9 +32,7 @@ class CategoryAdapter(
 			if (category.image != null) {
 				Glide.with(context).load(Constants.BASE_URL + category.image).into(binding.ivCategoryImage)
 			} else {
-				Glide.with(context).load(R.drawable.logo).into(binding.ivCategoryImage)
-				binding.ivCategoryImage.setBackgroundColor(R.color.primary)
-				binding.ivCategoryImage.scaleType = ImageView.ScaleType.FIT_CENTER
+				Glide.with(context).load(R.drawable.ic_launcher_background).into(binding.ivCategoryImage)
 			}
 
 			if (category.id == activeId) {

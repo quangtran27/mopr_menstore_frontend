@@ -45,36 +45,33 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var user: User
     private var phone: String = ""
     private var address: String= ""
-    private var note: String= ""
-    private var name: String= ""
+    private var note: String = ""
+    private var name: String = ""
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.header.tvTitle.text = "Mua hàng"
+        binding.header.ibBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
         val jsonSelectedCartItems = intent.getStringExtra("jsonSelectedCartItems")
         val type = object : TypeToken<List<CartItem>>() {}.type
         val gson = Gson()
+        user = SharePrefManager.getInstance(this).getUser()
         cartItemsChoosed = gson.fromJson(jsonSelectedCartItems, type)
         for (cartItem in cartItemsChoosed)
             cartItemIds.add(cartItem.id)
 
-        user = SharePrefManager.getInstance(this).getUser()
+        binding.tvEditInfo.setOnClickListener(){ displayEditDialog() }
+        binding.btnCartItemBuy.setOnClickListener{
+            if (address.isNotEmpty()) confirmOrder()
+            else Toast.makeText(this@CheckoutActivity,"Vui lòng điền   nhận hàng!!",Toast.LENGTH_LONG).show()
+        }
 
         fetchData()
-        binding.tvEditInfo.setOnClickListener(){
-            displayEditDialog()
-        }
-        binding.btnCartItemBuy.setOnClickListener{
-            lifecycleScope.launch {
-                if(address.isNotEmpty()){
-                    confirmOrder()
-                }
-                else
-                    Toast.makeText(this@CheckoutActivity,"Vui lòng điền địa chỉ nhận hàng!!",Toast.LENGTH_LONG).show()
-
-            }
-        }
     }
     private fun confirmOrder() {
         val confirmDialog = Dialog(this@CheckoutActivity)
@@ -85,6 +82,10 @@ class CheckoutActivity : AppCompatActivity() {
         OkBtn.setOnClickListener {
             lifecycleScope.launch {
                 orderApiUtil = OrderApiUtil(RetrofitClient.getRetrofit().create(OrderApiService::class.java))
+                Log.d(TAG, "confirmOrder: name: $name")
+                Log.d(TAG, "confirmOrder: name: $phone")
+                Log.d(TAG, "confirmOrder: name: $address")
+                Log.d(TAG, "confirmOrder: name: $note")
                 orderApiUtil.addOrder(user.id.toInt(), name, phone, address, 1, cartItemIds, note)
                 confirmDialog.dismiss()
                 displayAddOrderSuccessDialog()
@@ -106,11 +107,15 @@ class CheckoutActivity : AppCompatActivity() {
             //tới trang home
             val intent = Intent(this@CheckoutActivity,MainActivity::class.java)
             startActivity(intent)
+            finish()
+            notifyDialog.dismiss()
         }
         manageOrder.setOnClickListener {
             //tới trang quản lý đơn hàng
             val intent = Intent(this@CheckoutActivity, OrdersActivity::class.java)
             startActivity(intent)
+            finish()
+            notifyDialog.dismiss()
         }
         notifyDialog.show()
     }
@@ -147,7 +152,8 @@ class CheckoutActivity : AppCompatActivity() {
                 phone = ed_EditPhone.text.toString()
                 address = ed_EditAddress.text.toString()
                 note = ed_EditNote.text.toString()
-                if(phone.isNotEmpty() and address.isNotEmpty()){
+
+                if(phone.isNotEmpty() and address.isNotEmpty()) {
                     binding.tvNameCheckout.text = "Tên: $name"
                     binding.tvPhoneCheckout.text = "Số ĐT: $phone"
                     binding.tvAddressCheckout.text = "Địa chỉ: $address"
@@ -178,7 +184,6 @@ class CheckoutActivity : AppCompatActivity() {
                 images.add(image[0])
             }
             bindCheckOutItems(cartItemsChoosed,productDetailList, products,images)
-            Log.d("chauanh","bind successfully")
         }
     }
     private  fun totalPayment (cartItemsChoosed: List<CartItem>,productDetailList : MutableList<ProductDetail>): Int {
@@ -189,7 +194,6 @@ class CheckoutActivity : AppCompatActivity() {
                 (item.quantity * productDetailList[i].price)
             }
         }
-        Log.d("ChauAnh",totalPayment.toString())
         return totalPayment
     }
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
@@ -197,18 +201,28 @@ class CheckoutActivity : AppCompatActivity() {
         val checkOutItemsAdapter = CheckOutItemAdapter(this@CheckoutActivity,cartItemsChoosed,productDetailList, products,images)
         binding.rvCheckOutItems.setHasFixedSize(true)
         binding.rvCheckOutItems.adapter = checkOutItemsAdapter
-        binding.rvCheckOutItems.layoutManager = LinearLayoutManager(baseContext, LinearLayoutManager.VERTICAL, false)
         val totalPayment = totalPayment(cartItemsChoosed,productDetailList)
         checkOutItemsAdapter.notifyDataSetChanged()
-        binding.tvTemptPayment.text = Formatter.formatVNDAmount(totalPayment.toLong())
+
         defaultShippingFee = if (totalPayment >= 1000000) 0 else 30000
+
+        binding.tvTemptPayment.text = Formatter.formatVNDAmount(totalPayment.toLong())
         binding.tvShippingFeeCheckOut.text = Formatter.formatVNDAmount(defaultShippingFee.toLong())
         binding.tvTotalPaymentCheckout.text = Formatter.formatVNDAmount((totalPayment + defaultShippingFee).toLong())
         binding.tvTotalPayment.text = Formatter.formatVNDAmount((totalPayment + defaultShippingFee).toLong())
-        binding.tvNameCheckout.text = "Tên: ${user.name}"
-        binding.tvPhoneCheckout.text = "Số ĐT: ${user.phone}"
-        binding.tvAddressCheckout.text = "Địa chỉ: ${user.address}"
+
+        name = user.name
+        phone = user.phone
+        address = user.address
+
+        binding.tvNameCheckout.text = "Tên: $name"
+        binding.tvPhoneCheckout.text = "Số ĐT: $phone"
+        binding.tvAddressCheckout.text = "Địa chỉ: $address"
         binding.tvNoteCheckout.text = "Ghi chú: $note"
+    }
+
+    companion object {
+        const val TAG = "CheckoutActivity"
     }
 }
 
