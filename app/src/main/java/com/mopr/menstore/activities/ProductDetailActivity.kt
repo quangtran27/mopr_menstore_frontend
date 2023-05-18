@@ -28,6 +28,7 @@ import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.ReviewApiService
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.ActivityProductDetailBinding
+import com.mopr.menstore.fragments.main.NotificationFragment
 import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.ProductDetail
 import com.mopr.menstore.models.ProductImage
@@ -53,6 +54,7 @@ class ProductDetailActivity : AppCompatActivity() {
 	private lateinit var reviewApiUtil: ReviewApiUtil
 	private lateinit var cartApiUtil: CartApiUtil
 	private lateinit var selectedProductDetail: ProductDetail
+	private lateinit var sharePrefManager: SharePrefManager
 	private var product: Product? = null
 	private var productDetails: List<ProductDetail> = listOf()
 	private var productImages: List<ProductImage> = listOf()
@@ -67,24 +69,30 @@ class ProductDetailActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = ActivityProductDetailBinding.inflate(layoutInflater)
+		sharePrefManager = SharePrefManager.getInstance(this)
 		setContentView(binding.root)
 
 		binding.header.ibBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 		binding.header.ibCart.setOnClickListener { startActivity(Intent(this, CartActivity::class.java)) }
 		binding.btnAddToCart.setOnClickListener {
-			if (selectedProductDetail.quantity > 0) {
-				val userId = (SharePrefManager.getInstance(this).getUser().id).toInt()
-				if (!isAddingToCart) {
-					if (!::cartApiUtil.isInitialized) {
-						cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))
-					}
-					lifecycleScope.launch {
-						val cart = userApiUtil.getCart(userId)
-						if (cart != null) {
-							addToCart(cart.id, selectedProductDetail.id, 1)
+			if (sharePrefManager.isLoggedIn()){
+				if (selectedProductDetail.quantity > 0) {
+					val userId = (SharePrefManager.getInstance(this).getUser().id).toInt()
+					if (!isAddingToCart) {
+						if (!::cartApiUtil.isInitialized) {
+							cartApiUtil = CartApiUtil(RetrofitClient.getRetrofit().create(CartApiService::class.java))
+						}
+						lifecycleScope.launch {
+							val cart = userApiUtil.getCart(userId)
+							if (cart != null) {
+								addToCart(cart.id, selectedProductDetail.id, 1)
+							}
 						}
 					}
 				}
+			} else{
+				val intent = Intent(this@ProductDetailActivity, AuthenticationActivity::class.java)
+				startActivity(intent)
 			}
 		}
 

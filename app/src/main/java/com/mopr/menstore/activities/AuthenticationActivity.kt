@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
@@ -53,6 +54,11 @@ class AuthenticationActivity : AppCompatActivity() {
             binding.loginLayout.visibility = View.VISIBLE
             binding.signupBtn.visibility = View.GONE
             binding.loginBtn.visibility = View.VISIBLE
+        }
+        //Forward to Login Staff
+        binding.tvStaffLogin.setOnClickListener {
+            finish()
+            startActivity(Intent(this@AuthenticationActivity, StaffLoginActivity::class.java))
         }
 
         //Processing Login
