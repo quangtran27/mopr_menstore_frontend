@@ -14,4 +14,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="cancel">cancle</string>
     <string name="profile">Profile</string>
+    <string name="bottom_management_orders">Quản lý đơn hàng</string>
+    <string name="bottom_management_products">Quản lý sản phẩm</string>
 </resources>
