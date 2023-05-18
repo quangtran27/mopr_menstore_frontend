@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 			}
 			true
 		}
-
 		binding.bnMenu.selectedItemId = R.id.homePage
 	}
 
