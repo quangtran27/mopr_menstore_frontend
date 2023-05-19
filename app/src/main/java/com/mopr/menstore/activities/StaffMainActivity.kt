@@ -1,5 +1,6 @@
 package com.mopr.menstore.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ class StaffMainActivity : AppCompatActivity() {
         binding.bnMenu.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.orderManagerPage -> {
+                    startActivity(Intent(this@StaffMainActivity, OrdersManageActivity::class.java))
                 }
                 R.id.productsPage -> {
                 }
