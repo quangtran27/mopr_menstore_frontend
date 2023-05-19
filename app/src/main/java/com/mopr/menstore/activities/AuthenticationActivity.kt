@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,7 +16,6 @@ import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.databinding.ActivityAuthenticationBinding
 import com.mopr.menstore.models.User
-import com.mopr.menstore.utils.Constants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
