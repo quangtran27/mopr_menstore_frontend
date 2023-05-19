@@ -9,6 +9,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class OrderApiUtil (private val orderApiService: OrderApiService) {
+    suspend fun getAll(): List<Order> {
+        return  withContext(Dispatchers.IO) {
+            try {
+                val response = orderApiService.getAll().execute()
+                if (response.isSuccessful) {
+                    return@withContext response.body()!!
+                }
+                else {
+                    throw ApiException("Error getting orders. Status code: ${response.code()}")
+                }
+            }catch (e: Exception){
+                return@withContext listOf()
+            }
+        }
+    }
     suspend fun getOrdersByUser(userId: Int): List<Order>{
         return withContext(Dispatchers.IO) {
             try {

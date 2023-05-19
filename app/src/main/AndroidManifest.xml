@@ -51,21 +51,30 @@
             android:exported="false" />
         <activity
             android:name=".activities.StaffMainActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".activities.StaffLoginActivity"
-            android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.OrdersActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.StaffLoginActivity"
+            android:exported="false"></activity>
+        <activity
+            android:name=".activities.OrderDetailManageActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.OrderDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.OrdersManageActivity"
+            android:exported="false">
+
+        </activity>
         <activity
             android:name=".activities.ProductActivity"
             android:exported="false" />
@@ -84,7 +93,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.WelcomeActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activities.CartActivity"
             android:exported="false" />
