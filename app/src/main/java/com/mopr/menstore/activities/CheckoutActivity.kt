@@ -12,7 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mopr.menstore.R
@@ -44,7 +43,7 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var orderApiUtil: OrderApiUtil
     private lateinit var user: User
     private var phone: String = ""
-    private var address: String= ""
+    private var address: String = ""
     private var note: String = ""
     private var name: String = ""
 

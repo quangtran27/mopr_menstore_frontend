@@ -11,6 +11,6 @@
     <color name="text_link">#386ea3</color>
     <color name="transparentColor">#00FFFFFF</color>
 
-    <color name="background_noti">#fef0d3</color>
+    <color name="background_noti">#FFF3DE</color>
     <color name="background_gray">#f0f0f0</color>
 </resources>

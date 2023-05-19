@@ -70,6 +70,7 @@ class ChangePasswordActivity : AppCompatActivity() {
                                 "Đổi thành công!",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            finish()
                         } else if (response.code() == 404) {
                             Toast.makeText(
                                 this@ChangePasswordActivity,
