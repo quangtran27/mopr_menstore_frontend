@@ -7,6 +7,8 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface OrderApiService {
+    @GET("orders/")
+    fun getAll(): Call<List<Order>>
     @GET("users/{user_id}/orders")
     fun getOrdersByUser(@Path(value = "user_id", encoded = true)userId: Int): Call<List<Order>>
 
