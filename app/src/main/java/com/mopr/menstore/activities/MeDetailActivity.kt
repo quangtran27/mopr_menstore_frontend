@@ -8,10 +8,7 @@ import com.bumptech.glide.Glide
 import com.mopr.menstore.R
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.api.UserApiService
-import com.mopr.menstore.databinding.ActivityChangePasswordBinding
 import com.mopr.menstore.databinding.ActivityMeDetailBinding
-import com.mopr.menstore.databinding.FragmentMeDetailBinding
-import com.mopr.menstore.fragments.user.MeFragment
 import com.mopr.menstore.models.User
 import com.mopr.menstore.utils.Constants
 import com.mopr.menstore.utils.UserApiUtil

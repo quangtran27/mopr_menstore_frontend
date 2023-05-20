@@ -4,7 +4,10 @@ import android.util.Log
 import com.mopr.menstore.api.ApiException
 import com.mopr.menstore.api.UserApiService
 import com.mopr.menstore.models.Cart
+import com.mopr.menstore.models.ListResponse
+import com.mopr.menstore.models.Notification
 import com.mopr.menstore.models.Order
+import com.mopr.menstore.models.Product
 import com.mopr.menstore.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -92,6 +95,22 @@ class UserApiUtil(private val userApiService: UserApiService) {
             }
         }
     }
+
+	suspend fun getNotifications(userId: Int): List<Notification> {
+		return withContext(Dispatchers.IO) {
+			try {
+				val response = userApiService.getNotifications(userId).execute()
+				if (response.isSuccessful) {
+					return@withContext response.body() ?: emptyList<Notification>()
+				} else {
+					Log.d(TAG, "getAllProduct (Error): status code ${response.code()}")
+				}
+			} catch (e: Exception) {
+				Log.d(TAG, "getAllProduct (Exception): ${e.message}")
+			}
+			return@withContext emptyList<Notification>()
+		}
+	}
 
 	companion object {
 		const val  TAG = "UserApiUtil"

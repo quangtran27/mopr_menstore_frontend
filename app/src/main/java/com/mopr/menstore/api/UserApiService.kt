@@ -1,6 +1,7 @@
 package com.mopr.menstore.api
 
 import com.mopr.menstore.models.Cart
+import com.mopr.menstore.models.Notification
 import com.mopr.menstore.models.Order
 import com.mopr.menstore.models.User
 import okhttp3.MultipartBody
@@ -73,4 +74,7 @@ interface UserApiService {
         @Part("email") email: RequestBody,
         @Part image: MultipartBody.Part
     ): Call<ResponseBody>
+
+    @GET("users/{userId}/notifications")
+    fun getNotifications(@Path(value = "userId", encoded = true) userId: Int): Call<List<Notification>>
 }

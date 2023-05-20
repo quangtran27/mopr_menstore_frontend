@@ -50,11 +50,17 @@
             android:name=".activities.MeDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.StaffMainActivity"
-            android:exported="false"/>
+            android:name=".activities.OrdersActivity"
+            android:exported="false" />
         <activity
-            android:name=".activities.StaffLoginActivity"
-            android:exported="false"/>
+            android:name=".activities.OrderDetailManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.OrderDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.OrdersManageActivity"
+            android:exported="false">
         <activity
             android:name=".activities.OrdersActivity"
             android:exported="false" />
@@ -70,6 +76,12 @@
         <activity
             android:name=".activities.ReviewActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.StaffMainActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".activities.StaffLoginActivity"
+            android:exported="false"/>
         <activity
             android:name=".activities.SearchActivity"
             android:exported="false"
