@@ -1,5 +1,7 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -10,9 +12,11 @@ import com.mopr.menstore.fragments.user.MeFragment
 
 class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
+	private lateinit var sharePrefManager: SharePrefManager
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = ActivityMainBinding.inflate(layoutInflater)
+		sharePrefManager = SharePrefManager.getInstance(this)
 		setContentView(binding.root)
 		binding.bnMenu.setOnItemSelectedListener {
 
@@ -24,10 +28,20 @@ class MainActivity : AppCompatActivity() {
 					loadFragment(ProductsFragment.newInstance(0))
 				}
 				R.id.notiPage -> {
-					loadFragment(NotificationFragment())
+					if (sharePrefManager.isLoggedIn()){
+						loadFragment(NotificationFragment())
+					} else{
+						val intent = Intent(this@MainActivity, AuthenticationActivity::class.java)
+						startActivity(intent)
+					}
 				}
 				R.id.mePage -> {
-					loadFragment(MeFragment())
+					if (sharePrefManager.isLoggedIn()){
+						loadFragment(NotificationFragment())
+					} else{
+						val intent = Intent(this@MainActivity, AuthenticationActivity::class.java)
+						startActivity(intent)
+					}
 				}
 			}
 			true

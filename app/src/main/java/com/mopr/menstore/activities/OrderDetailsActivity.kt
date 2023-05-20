@@ -1,5 +1,6 @@
 package com.mopr.menstore.activities
 
+import SharePrefManager
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
@@ -16,6 +17,7 @@ import com.mopr.menstore.api.OrderApiService
 import com.mopr.menstore.api.ProductApiService
 import com.mopr.menstore.api.RetrofitClient
 import com.mopr.menstore.databinding.ActivityOrderDetailsBinding
+import com.mopr.menstore.fragments.main.NotificationFragment
 import com.mopr.menstore.models.Order
 import com.mopr.menstore.models.OrderItem
 import com.mopr.menstore.models.Product
@@ -28,15 +30,29 @@ import kotlinx.coroutines.launch
 
 class OrderDetailsActivity : AppCompatActivity() {
     private var orderId: Int = -1
+    private var status: Int = -1
+    private var isPaid: Boolean = false
+    private var isReviewed: Boolean = false
     private var order: Order? = null
     private lateinit var binding: ActivityOrderDetailsBinding
     private lateinit var orderApiUtil: OrderApiUtil
     private lateinit var productApiUtil: ProductApiUtil
+    private lateinit var sharePrefManager: SharePrefManager
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrderDetailsBinding.inflate(layoutInflater)
+        sharePrefManager = SharePrefManager.getInstance(this)
         setContentView(binding.root)
+        binding.header.ibCart.setOnClickListener{
+            if (sharePrefManager.isLoggedIn()){
+                val intent = Intent(this@OrderDetailsActivity, AuthenticationActivity::class.java)
+                startActivity(intent)
+            } else{
+                val intent = Intent(this@OrderDetailsActivity, OrderDetailsActivity::class.java)
+                startActivity(intent)
+            }
+        }
         binding.header.tvTitle.text = "Chi tiết đơn hàng"
         binding.header.ibBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.btnReviewOrCancel.setOnClickListener {

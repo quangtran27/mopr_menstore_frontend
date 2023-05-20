@@ -6,6 +6,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.main.NotificationFragment">
+
     <include android:id="@+id/header" layout="@layout/common_header_with_title" />
     <LinearLayout
         android:id="@+id/llGuest"
@@ -61,5 +62,4 @@
                 android:orientation="vertical" />
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

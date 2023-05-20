@@ -19,6 +19,12 @@ interface UserApiService {
         @Field("phone") phone: String,
         @Field("password") password: String
     ): Call<User>
+    @FormUrlEncoded
+    @POST("users/staff-login")
+    fun staffLogin(
+        @Field("phone") phone: String,
+        @Field("password") password: String
+    ): Call<User>
 
     //Signup APi
     @FormUrlEncoded
